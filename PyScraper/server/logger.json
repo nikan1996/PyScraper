@@ -1,0 +1,31 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "standard": {
+            "format": "[%(asctime)s] [%(levelname)-6s]  [%(module)-10s:%(lineno)d]  [%(thread)d] %(message)s"
+        }
+    },
+    "handlers": {
+        "default": {
+            "level": "INFO",
+            "formatter": "standard",
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": "./server.log",
+            "when": "midnight",
+            "interval": 1
+        },
+        "stdout": {
+            "level": "INFO",
+            "formatter": "standard",
+            "class": "logging.StreamHandler"
+        }
+    },
+    "loggers": {
+        "": {
+            "handlers": ["default", "stdout"],
+            "level": "INFO",
+            "propagate": true
+        }
+    }
+}
