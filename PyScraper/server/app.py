@@ -9,12 +9,13 @@
 @time: 2018/5/14 下午1:14
 """
 import json
+import logging
+import logging.config
 import traceback
 from os import path
-import os
-from flask import Flask, jsonify
-import logging
 
+from flask import Flask, jsonify
+from PyScraper.server.extensions import db
 logger = logging.getLogger(__name__)
 
 def create_app():
@@ -22,8 +23,15 @@ def create_app():
     app = Flask("eigenrec", template_folder=tmpl_dir)
 
     configure_logging(app)
-    
+    init_db(app)
     return app
+
+
+def init_db(app):
+    db.init_app(app)
+    with app.app_context():
+        logger.info('Create all tables!')
+        db.create_all()
 
 def configure_logging(app):
     config_file = '{project_path}/logger.json'
