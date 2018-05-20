@@ -7,32 +7,29 @@
                     <el-form-item label="数据库名称" prop="db_name">
                         <el-input v-model="ruleForm.name" suffixIcon="el-icon-edit"></el-input>
                     </el-form-item>
-                    <el-form-item label="地址" prop="name">
+                    <el-form-item label="地址" prop="db_address">
                         <el-input v-model="ruleForm.name" placeholder="localhost"></el-input>
                     </el-form-item>
-                    <el-form-item label="端口" prop="name">
+                    <el-form-item label="端口" prop="db_port">
                         <el-input v-model="ruleForm.name" placeholder="3306"></el-input>
                     </el-form-item>
-                    <el-form-item label="用户名" prop="name">
+                    <el-form-item label="用户名" prop="db_user">
                         <el-input v-model="ruleForm.name" placeholder="user"></el-input>
                     </el-form-item>
-                    <el-form-item label="密码" prop="name">
+                    <el-form-item label="密码" prop="db_password">
                         <el-input v-model="ruleForm.name" placeholder="password" type="password"></el-input>
                     </el-form-item>
 
-                    <el-form-item label="即时配送" prop="delivery">
-                        <el-switch v-model="ruleForm.delivery"></el-switch>
+                    <el-form-item label="类型" prop="db_type">
+                        <el-select v-model="db_type_default_value" defaultFirstOption placeholder="请选择">
+                            <el-option
+                                    v-for="item in db_type_options"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
-                    <el-form-item label="活动性质" prop="type">
-                        <el-checkbox-group v-model="ruleForm.type">
-                            <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-                            <el-checkbox label="地推活动" name="type"></el-checkbox>
-                            <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-                            <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-
-
                     <el-form-item>
                         <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
                         <el-button @click="resetForm('ruleForm')">测试</el-button>
@@ -40,18 +37,32 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
-            <el-tab-pane label="数据库管理" name="db_management">数据库管理</el-tab-pane>
+            <el-tab-pane label="数据库管理" name="db_management">
+                <el-table :data="db_data" stripe style="width: 100%">
+                    <el-table-column prop="db_name" label="数据库名称" width="180">
+                    </el-table-column>
+                    <el-table-column label="操作" width="180">
+                    </el-table-column>
+                </el-table>
+                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                               :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100"
+                               layout="total, sizes, prev, pager, next, jumper" :total="total">
+                </el-pagination>
+            </el-tab-pane>
 
         </el-tabs>
 
     </div>
 </template>
 <script>
+    import ElSelectDropdown from "../../node_modules/element-ui/packages/select/src/select-dropdown.vue";
+
     export default {
+        components: {ElSelectDropdown},
         name: "Databases",
         data() {
             return {
-                activeName:"db_management",
+                activeName: "db_management",
                 ruleForm: {
                     name: '',
                     region: '',
@@ -67,46 +78,26 @@
                         required: true,
                         message: '请输入数据库名称',
                         trigger: 'blur'
-                    }, {
-                        min: 3,
-                        max: 5,
-                        message: '长度在 3 到 5 个字符',
+                    }],
+                    db_address: [{
+                        required: true,
+                        message: '请输入数据库地址',
                         trigger: 'blur'
                     }],
-                    region: [{
-                        required: true,
-                        message: '请选择活动区域',
-                        trigger: 'change'
+
+                },
+                db_type_options: [{
+                    value: 'mysql',
+                    label: 'Mysql',
+                },
+                    {
+                        value: 'mongodb',
+                        label: 'MongoDB',
                     }],
-                    date1: [{
-                        type: 'date',
-                        required: true,
-                        message: '请选择日期',
-                        trigger: 'change'
-                    }],
-                    date2: [{
-                        type: 'date',
-                        required: true,
-                        message: '请选择时间',
-                        trigger: 'change'
-                    }],
-                    type: [{
-                        type: 'array',
-                        required: true,
-                        message: '请至少选择一个活动性质',
-                        trigger: 'change'
-                    }],
-                    resource: [{
-                        required: true,
-                        message: '请选择活动资源',
-                        trigger: 'change'
-                    }],
-                    desc: [{
-                        required: true,
-                        message: '请填写活动形式',
-                        trigger: 'blur'
-                    }]
-                }
+                currentPage: 1,
+                total: 58,
+                db_type_default_value: "mysql",
+                db_data: [],
             };
         },
         methods: {
@@ -122,7 +113,15 @@
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
+            },
+
+            handleSizeChange(val) {
+                console.log(`每页 ${val} 条`);
+            },
+            handleCurrentChange(val) {
+                console.log(`当前页: ${val}`);
             }
+
         }
     }
 </script>
