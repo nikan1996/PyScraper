@@ -16,7 +16,7 @@ from PyScraper.server.models.base import JsonEncodedDict
 
 class Database(db.Model):
     __tablename__ = "database"
-
+    
     id = db.Column(db.Integer, autoincrement=True, primary_key=True, doc="自增id")
     database_name = db.Column(db.String(64), nullable=False, doc="数据库名称")
     config = db.Column(JsonEncodedDict, doc="数据库配置")
