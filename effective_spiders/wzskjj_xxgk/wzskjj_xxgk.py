@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
+import re
+
 import scrapy
 from scrapy import Request
 from scrapy.http import TextResponse
-import re
-from ..items import WzskjjXxgkItem
 
+class WzskjjXxgkItem(scrapy.Item):
+    # define the fields for your item here like:
+    # name = scrapy.Field()
+    标题 = scrapy.Field()  # 标题
+    发布单位 = scrapy.Field()  # 发布时间
+    发布日期 = scrapy.Field()  # 发布日期
+    url = scrapy.Field()
+    
 class Wzskjj_xxgkSpider(scrapy.Spider):
     zh_cn_name = "温州市科技局_信息公开"
     name = 'wzskjj_xxgk'

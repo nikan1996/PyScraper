@@ -16,7 +16,14 @@ from os import path
 
 from flask import Flask, jsonify
 from PyScraper.server.extensions import db
+from PyScraper.spider_loop import start_spider_loop
+from PyScraper.utils import run_in_thread
+from PyScraper.utils.multiprocessing_queue import Queue
+
 logger = logging.getLogger(__name__)
+
+queue = Queue()
+
 
 def create_app():
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
@@ -24,6 +31,8 @@ def create_app():
 
     configure_logging(app)
     init_db(app)
+    
+    init_spider_loop(queue)
     return app
 
 
@@ -33,6 +42,11 @@ def init_db(app):
         logger.info('Create all tables!')
         db.create_all()
 
+
+def init_spider_loop(queue):
+    run_in_thread(start_spider_loop, queue)
+    
+    
 def configure_logging(app):
     config_file = '{project_path}/logger.json'
     project_path = path.join(path.dirname(path.abspath(__file__)))
