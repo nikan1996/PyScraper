@@ -4,7 +4,7 @@
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-circle-plus-outline"></i>添加数据库</span>
                 <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-                    <el-form-item label="数据库名称" prop="db_name">
+                    <el-form-item label="连接名" prop="name">
                         <el-input v-model="ruleForm.name" suffixIcon="el-icon-edit"></el-input>
                     </el-form-item>
                     <el-form-item label="地址" prop="db_address">
@@ -12,6 +12,9 @@
                     </el-form-item>
                     <el-form-item label="端口" prop="db_port">
                         <el-input v-model="ruleForm.name" placeholder="3306"></el-input>
+                    </el-form-item>
+                    <el-form-item label="数据库名称" prop="db_name">
+                        <el-input v-model="ruleForm.name" suffixIcon="el-icon-edit"></el-input>
                     </el-form-item>
                     <el-form-item label="用户名" prop="db_user">
                         <el-input v-model="ruleForm.name" placeholder="user"></el-input>
@@ -39,13 +42,13 @@
             </el-tab-pane>
             <el-tab-pane label="数据库管理" name="db_management">
                 <el-table :data="db_data" stripe style="width: 100%">
-                    <el-table-column prop="db_name" label="数据库名称" width="180">
+                    <el-table-column prop="db_name" label="连接名" width="180">
                     </el-table-column>
                     <el-table-column label="操作" width="180">
                     </el-table-column>
                 </el-table>
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                               :current-page="currentPage" :page-sizes="[100, 200, 300, 400]" :page-size="100"
+                               :current-page="currentPage" :page-sizes="[10, 20, 50]" :page-size="10"
                                layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
             </el-tab-pane>
@@ -95,7 +98,7 @@
                         label: 'MongoDB',
                     }],
                 currentPage: 1,
-                total: 58,
+                total: 0,
                 db_type_default_value: "mysql",
                 db_data: [],
             };
