@@ -4,7 +4,7 @@
 
 @author:nikan
 
-@file: script_sample.py
+@file: __init__.py.py
 
-@time: 24/02/2018 5:09 PM
+@time: 2018/5/22 上午6:12
 """

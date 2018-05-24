@@ -1,0 +1,33 @@
+# -*- coding: utf-8 -*-
+import re
+import scrapy
+from scrapy.crawler import CrawlerProcess
+from scrapy.http import TextResponse
+
+
+class ${classname}Item(scrapy.Item):
+    # define the fields for your item here like:
+    # name = scrapy.Field()
+    pass
+
+
+class $classname(scrapy.Spider):
+    name = '$name'
+    allowed_domains = ['$domain']
+
+    def start_requests(self):
+        start_urls = ['$start_url']
+        for url in start_urls:
+            yield Request(url, callback=self.parse)
+
+    def parse(self, response: TextResponse):
+        pass
+
+
+if __name__ == '__main__':
+    settings = {
+        "TELNETCONSOLE_ENABLED": False,
+    }
+    process = CrawlerProcess(settings=settings)
+    process.crawl($classname)
+    process.start()

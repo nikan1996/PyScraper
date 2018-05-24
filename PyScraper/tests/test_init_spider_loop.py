@@ -8,19 +8,30 @@
 
 @time: 2018/5/22 上午3:31
 """
-from pytest import skip
+
+
+from queue import Queue
 
 from PyScraper.spider_loop import start_spider_loop
 from PyScraper.utils import run_in_thread
-from queue import Queue
-import time
+from effective_spiders.test_spiders.wzskjj_xxgk.wzskjj_xxgk import Wzskjj_xxgkSpider
+
+
 def put_spider(queue):
     while True:
-        queue.put('22')
-        time.sleep(5)
-# @skip
+        queue.put(Wzskjj_xxgkSpider)
+        print('put spider')
+        break
+        # time.sleep(5)
+        
 def test_start_spider_loop():
     queue = Queue()
+    print('start')
+    run_in_thread(put_spider(queue))
+    print('put queue start')
+    start_spider_loop(queue)
+    print('end')
+
+if __name__ == '__main__':
     
-    run_in_thread(start_spider_loop, queue)
-    run_in_thread()
+    test_start_spider_loop()
