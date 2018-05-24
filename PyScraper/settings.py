@@ -9,6 +9,8 @@
 @time: 2018/5/23 下午2:52
 """
 # Obey robots.txt rules
+from os.path import abspath, join, dirname
+
 ROBOTSTXT_OBEY = False
 DOWNLOAD_HANDLERS = {
     'http': 'scrapy.core.downloader.handlers.http.ChromiumDownloadHandler',
@@ -31,6 +33,8 @@ COOKIES_ENABLED = False
 FEED_EXPORT_ENCODING = 'utf-8'
 
 TELNETCONSOLE_ENABLED = False
+
+MAIL_TEMPLATES_PATH = abspath(join(dirname(__file__), 'utils', 'templates', 'mail_templates.html'))
 # See also autothrottle settings and docs
 # DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:

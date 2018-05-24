@@ -22,10 +22,6 @@ class ErrorCorrectionExtractor:
     def __init__(self, pairs: List[Tuple[str, str]]):
         pairs = self.to_safe(pairs)
         self.compiled_pairs: List[Tuple[Pattern, str]] = self.compile_pairs(pairs)
-        
-        
-    def extract_links(self, response):
-        pass
     
     def find_error(self, response: TextResponse):
         # url = response.url
@@ -36,9 +32,6 @@ class ErrorCorrectionExtractor:
             complete_list = pattern.findall(content)
             error_list = [one for one in complete_list if one != correct_str]
         return error_list
-        
-            
-            
 
 
     @staticmethod

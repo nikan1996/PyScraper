@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+</head>
+<body>
+<table border="1">
+    <tr>
+        {% for item in table_head %}
+        <th>{{ item }}</th>
+        {% endfor %}
+    <tr>
+        {% for data in table_data %}
+    <tr>
+        <td>{{data.correct}}</td>
+        <td>{{data.error}}</td>
+        <td><a href={{data.url}}>{{data.url}}</a></td>
+    </tr>
+    {% endfor %}
+
+</table>
+</body>
+</html>

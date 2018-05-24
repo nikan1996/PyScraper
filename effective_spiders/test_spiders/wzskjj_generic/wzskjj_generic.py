@@ -33,7 +33,7 @@ class WzskjjSpider(Spider):
         result = self.error_correction_extractor.find_error(response)
         print(result)
         if result:
-            self.mailer.send(to=["859905874@qq.com"], subject="Test", body="Some body",)
+            # self.mailer.send(to=["859905874@qq.com"], subject='Test', body='<html><body><h1>Hello</h1></body></html>', mimetype='text/html')
             # links = [lnk for lnk in self.link_extractor.extract_links(response)]
         # for link in links:
         #     yield Request(link)

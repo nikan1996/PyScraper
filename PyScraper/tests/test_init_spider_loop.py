@@ -9,7 +9,6 @@
 @time: 2018/5/22 上午3:31
 """
 
-
 from queue import Queue
 
 from PyScraper.spider_loop import start_spider_loop
@@ -23,7 +22,8 @@ def put_spider(queue):
         print('put spider')
         break
         # time.sleep(5)
-        
+
+
 def test_start_spider_loop():
     queue = Queue()
     print('start')
@@ -32,6 +32,6 @@ def test_start_spider_loop():
     start_spider_loop(queue)
     print('end')
 
+
 if __name__ == '__main__':
-    
     test_start_spider_loop()
