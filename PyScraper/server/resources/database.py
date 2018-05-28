@@ -4,11 +4,12 @@
 
 @author:nikan
 
-@file: database.py
+@file: database_handler.py
 
 @time: 2018/5/14 下午1:59
 """
 from flask_restful import Resource
+
 
 class Databases(Resource):
     def get(self):

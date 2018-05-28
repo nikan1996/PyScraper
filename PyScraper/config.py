@@ -10,4 +10,5 @@
 """
 
 
-DATABASE = 'mysql://root:123456@localhost:3306/pyscraper'
+class Config(object):
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/pyscraper'

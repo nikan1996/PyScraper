@@ -10,40 +10,69 @@
 """
 from scrapy import Request, Item
 from scrapy.crawler import CrawlerProcess
+from scrapy.http import TextResponse, HtmlResponse
 from scrapy.spiders import Spider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.mail import MailSender
+from scrapy.link import Link
 from PyScraper.extractor.error_correction import ErrorCorrectionExtractor
+from typing import List
+from PyScraper.extractor.html_link import HtmlLinkExtractor
+from PyScraper.extractor.xml_link import DataProxyXmlLinkExtractor
 
 
 class WzskjjSpider(Spider):
     name = 'wzkjj'
     allowed_domains = ['wzkj.wenzhou.gov.cn']
-    # start_urls = ['http://wzkj.wenzhou.gov.cn/']
-    start_urls = ['http://wzkj.wenzhou.gov.cn/col/col1220139/index.html']
+    start_urls = ['http://wzkj.wenzhou.gov.cn/']
     rules = [
         ("关于下达温州市201[\s\S]{1}年公益性科技计划项目", "关于下达温州市2017年公益性科技计划项目")
     ]
-    link_extractor = LinkExtractor()
+    htmk_link_extractor = HtmlLinkExtractor()
     error_correction_extractor = ErrorCorrectionExtractor(rules)
     mailer = MailSender(smtphost='smtp.qq.com', mailfrom='859905874@qq.com', smtpport=465,
                         smtpssl=True, smtpuser='859905874@qq.com', smtppass='cgcxzdatxduybbhh')
+    custom_settings = {
+    'CONCURRENT_REQUESTS_PER_DOMAIN' : 4,
+    'LOG_LEVEL': 'INFO'
+        # 'DOWNLOAD_DELAY': 0.3,
+    }
     
-    def parse(self, response):
+    def parse(self, response: TextResponse):
         result = self.error_correction_extractor.find_error(response)
-        print(result)
         if result:
+            print("error_correction_result", result)
             # self.mailer.send(to=["859905874@qq.com"], subject='Test', body='<html><body><h1>Hello</h1></body></html>', mimetype='text/html')
-            # links = [lnk for lnk in self.link_extractor.extract_links(response)]
-        # for link in links:
-        #     yield Request(link)
+        links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
+        for link in links:
+            # print(link)
+            yield Request(link.url, callback=self.parse, errback=self.errorback)
+        """
+        获取dataproxy接口的链接
+        """
+        # d = Deffer
+        data_proxy_extractor = DataProxyXmlLinkExtractor()
+        if data_proxy_extractor.has_dataproxy_link(response):
+            yield data_proxy_extractor.gen_dataproxy_links()
+            # for data_proxy_link in data_proxy_links:
+                # yield Request(data_proxy_link, callback=self.yield_dataproxy_link, meta={'data_proxy_extractor': data_proxy_extractor})
             
+    def errorback(self, failure):
+        print('resonse is error in response.url:', failure)
 
+    # def yield_dataproxy_link(self, response):
+    #     """判断政府网站是否包括dataproxy接口的探测与解析"""
+    #     data_proxy_extractor: DataProxyXmlLinkExtractor = response.meta.get('data_proxy_extractor')
+    #     record_urls = data_proxy_extractor.dataproxy_xml_extract(response.text)
+    #     for url in record_urls:
+    #         yield Request(url, callback=self.parse)
+    
+    
 if __name__ == '__main__':
     settings = {
         "TELNETCONSOLE_ENABLED": False,
-        # "LOG_FILE": "./wzkjj.log"
+        "LOG_FILE": "./wzkjj.log"
     }
     process = CrawlerProcess(settings=settings)
     process.crawl(WzskjjSpider)
-    process.start(stop_after_crawl=False)
+    process.start()

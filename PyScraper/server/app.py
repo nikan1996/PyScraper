@@ -15,20 +15,22 @@ import traceback
 from os import path
 
 from flask import Flask, jsonify
-from PyScraper.server.extensions import db
+
+from PyScraper.server.extensions import db, queue
+
 from PyScraper.spider_loop import start_spider_loop
 from PyScraper.utils import run_in_thread
-from PyScraper.utils.multiprocessing_queue import Queue
-
+import sqlalchemy
+from sqlalchemy_utils import database_exists, create_database
 logger = logging.getLogger(__name__)
 
-queue = Queue()
+
 
 
 def create_app():
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
-    app = Flask("eigenrec", template_folder=tmpl_dir)
-
+    app = Flask("PyScraper", template_folder=tmpl_dir)
+    app.config.from_object('PyScraper.config.Config')
     configure_logging(app)
     init_db(app)
     
@@ -37,16 +39,26 @@ def create_app():
 
 
 def init_db(app):
+    try:
+        engine = sqlalchemy.create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
+        if not database_exists(engine.url):
+            create_database(engine.url)
+    except Exception as e:
+        print(e)
     db.init_app(app)
     with app.app_context():
-        logger.info('Create all tables!')
+        from PyScraper.server.models.database import Database
+        from PyScraper.server.models.project import Project
+        logger.info(Database)
+        logger.info(Project)
         db.create_all()
+        logger.info('Create all tables!')
 
 
 def init_spider_loop(queue):
     run_in_thread(start_spider_loop, queue)
-    
-    
+
+
 def configure_logging(app):
     config_file = '{project_path}/logger.json'
     project_path = path.join(path.dirname(path.abspath(__file__)))
@@ -79,7 +91,7 @@ def configure_errorhandler(app):
         exc = traceback.format_exc()
         res = {"error": exc}
         return jsonify(res), 500
-    
+
 
 if __name__ == '__main__':
     print('START PyScraper server')

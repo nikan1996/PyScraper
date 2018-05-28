@@ -14,8 +14,9 @@ from os.path import abspath, join, dirname
 ROBOTSTXT_OBEY = False
 DOWNLOAD_HANDLERS = {
     'http': 'scrapy.core.downloader.handlers.http.ChromiumDownloadHandler',
-    'https': 'scrapy.core.downloader.handlers.http.ChromiumloadHandler',
+    'https': 'scrapy.core.downloader.handlers.http.ChromiumDownloadHandler',
 }
+USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'en',
@@ -32,6 +33,7 @@ COOKIES_ENABLED = False
 
 FEED_EXPORT_ENCODING = 'utf-8'
 
+CHROMIUM_URL = '127.0.0.1:9000'
 TELNETCONSOLE_ENABLED = False
 
 MAIL_TEMPLATES_PATH = abspath(join(dirname(__file__), 'utils', 'templates', 'mail_templates.html'))

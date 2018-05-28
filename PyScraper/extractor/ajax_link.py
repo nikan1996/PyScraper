@@ -4,7 +4,9 @@
 
 @author:nikan
 
-@file: __init__.py.py
+@file: ajax_link.py
 
-@time: 13/03/2018 2:14 PM
+@time: 2018/5/26 下午5:21
 """
+
+

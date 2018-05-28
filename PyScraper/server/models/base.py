@@ -18,20 +18,30 @@ from sqlalchemy.dialects import mysql
 class BaseMixin(ModelBase):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-    
-    
+
+
 class JsonEncodedDict(TypeDecorator):
     """Enables JSON storage by encoding and decoding on the fly."""
     impl = mysql.LONGTEXT
-
+    
     def process_bind_param(self, value, dialect):
         if value is None:
             return '{}'
         else:
             return json.dumps(value)
-
+    
     def process_result_value(self, value, dialect):
         if value is None:
             return {}
         else:
             return json.loads(value)
+
+
+def convert_query_result2dict(query_result):
+    if isinstance(query_result, list):
+        new_result = []
+        for r in query_result:
+            new_result.append(dict(r))
+        return new_result
+    else:
+        return dict(query_result)
