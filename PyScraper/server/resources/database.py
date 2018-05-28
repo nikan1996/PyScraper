@@ -14,8 +14,13 @@ from flask_restful import Resource
 class Databases(Resource):
     def get(self):
         pass
+
+
+class Database(Resource):
+    def get(self):
+        pass
     
-    def post(self):
+    def put(self):
         pass
     
     def delete(self):

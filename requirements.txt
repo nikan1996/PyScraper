@@ -11,3 +11,4 @@ regex>=2018.2.21
 sqlalchemy>=1.2.7
 pymysql
 sqlalchemy_utils
+pytest-flask>=0.10.0
