@@ -27,4 +27,4 @@ class Database(db.Model):
     is_deleted = db.Column(db.Boolean, default=0, doc="数据库是否删除的标记")
     update_timestamp = db.Column(db.TIMESTAMP, server_default=text('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'),
                                  doc="更新时间")
-    create_timestamp = db.Column(db.TIMESTAMP, default=datetime.datetime.utcnow, doc="创建时间")
+    create_timestamp = db.Column(db.TIMESTAMP, default=datetime.datetime.now, doc="创建时间")

@@ -12,3 +12,7 @@
 
 class Config(object):
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/pyscraper'
+    
+class TestConfig(Config):
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/test_pyscraper'

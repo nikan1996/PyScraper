@@ -15,7 +15,6 @@ import traceback
 from os import path
 from flask_restful import Api
 from flask import Flask, jsonify
-
 from PyScraper.server.extensions import db, queue
 from PyScraper.server.resources.database import Databases, Database
 from PyScraper.server.resources.project import Projects, Project
@@ -28,15 +27,17 @@ from sqlalchemy_utils import database_exists, create_database
 logger = logging.getLogger(__name__)
 
 
-def create_app():
+def create_app(config='PyScraper.config.Config'):
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
     app = Flask("PyScraper", template_folder=tmpl_dir)
-    app.config.from_object('PyScraper.config.Config')
+    app.config.from_object(config)
     configure_logging(app)
     configure_api(app)
     init_db(app)
     
     init_spider_loop(queue)
+    init_app_callbacks(app)
+    
     return app
 
 
@@ -60,6 +61,15 @@ def init_db(app):
 def init_spider_loop(queue):
     """单一进程内初始化spider事件循环"""
     run_in_thread(start_spider_loop, queue)
+
+
+def init_app_callbacks(app):
+    def after_clean(resp, *args, **kwargs):
+        # commit db session after each request
+        db.session.commit()
+        return resp
+    
+    app.after_request(after_clean)
 
 
 def configure_api(app):

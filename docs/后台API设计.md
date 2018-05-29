@@ -6,6 +6,10 @@
 
 `GET /projects`
 
+创建project
+
+`put /projects`
+
 删除某个Project
 
 `DELETE /projects/<int:project_id>`
@@ -29,6 +33,10 @@ Action: Start, Stop, Pause
 获取Database列表
 
 `GET /databases`
+
+新建Database
+
+`PUT /database`
 
 删除某个Database
 

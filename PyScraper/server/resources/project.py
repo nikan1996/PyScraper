@@ -8,20 +8,47 @@
 
 @time: 2018/5/28 上午2:45
 """
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
+
+from PyScraper.server.resource_handlers.project_handler import ProjectHandler
+
+parser = reqparse.RequestParser()
+parser.add_argument('project_name', type=str, required=True, help='project_name is required')
+parser.add_argument('setting', type=dict, required=True, help='setting is required')
+parser.add_argument('cron_config', type=dict, required=True, help='cron_config is required')
+parser.add_argument('tag', type=str, default='', help='tag is required for string type')
 
 
 class Projects(Resource):
     def get(self):
-        pass
+        result = ProjectHandler().get_all_projects()
+        return result
+    
+    def put(self):
+        args = parser.parse_args()
+        project_name = args.project_name
+        setting = args.setting
+        cron_config = args.cron_config
+        tag = args.tag
+        result = ProjectHandler().create_project(project_name=project_name, setting=setting, cron_config=cron_config, tag=tag)
+        return result
 
 
 class Project(Resource):
     def get(self, project_id):
-        pass
+        result = ProjectHandler().get_project(project_id)
+        return result
     
     def put(self, project_id):
-        pass
+        args = parser.parse_args()
+        project_name = args.project_name
+        setting = args.setting
+        cron_config = args.cron_config
+        tag = args.tag
+        result = ProjectHandler().update_project(project_id=project_id, project_name=project_name, setting=setting,
+                                                 cron_config=cron_config, tag=tag)
+        return result
     
     def delete(self, project_id):
-        pass
+        result = ProjectHandler().delete_project(project_id)
+        return result

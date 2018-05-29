@@ -13,5 +13,5 @@ from flask_sqlalchemy import SQLAlchemy
 from PyScraper.server.models.base import BaseMixin
 from PyScraper.utils.multiprocessing_queue import Queue
 
-db = SQLAlchemy(model_class=BaseMixin)
+db = SQLAlchemy(session_options={'autocommit': False}, model_class=BaseMixin)
 queue = Queue()

@@ -13,12 +13,16 @@ import json
 from flask_sqlalchemy import Model as ModelBase
 from sqlalchemy import TypeDecorator
 from sqlalchemy.dialects import mysql
-
+from datetime import datetime
 
 class BaseMixin(ModelBase):
     def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
+        return {c.name: self.serialize(getattr(self, c.name)) for c in self.__table__.columns}
+    
+    def serialize(self, attr):
+        if isinstance(attr, datetime):
+            return str(attr)
+        return attr
 
 class JsonEncodedDict(TypeDecorator):
     """Enables JSON storage by encoding and decoding on the fly."""
@@ -38,10 +42,13 @@ class JsonEncodedDict(TypeDecorator):
 
 
 def convert_query_result2dict(query_result):
+    if query_result is None:
+        return query_result
     if isinstance(query_result, list):
         new_result = []
         for r in query_result:
-            new_result.append(dict(r))
+            new_result.append(r.as_dict())
         return new_result
     else:
-        return dict(query_result)
+        return query_result.as_dict()
+    

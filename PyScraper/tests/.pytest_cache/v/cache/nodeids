@@ -1,3 +1,4 @@
 [
-  "test_xml.py::test_dataproxy"
+  "test_client.py::test_database_api",
+  "test_client.py::test_project_api"
 ]
