@@ -28,7 +28,7 @@ def test_start_spider_loop():
     queue = Queue()
     print('start')
     run_in_thread(put_spider(queue))
-    print('put queue start')
+    print('put spider_cls_queue start')
     start_spider_loop(queue)
     print('end')
 

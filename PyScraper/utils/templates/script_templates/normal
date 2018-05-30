@@ -18,7 +18,7 @@ class $classname(scrapy.Spider):
     def start_requests(self):
         start_urls = ['$start_url']
         for url in start_urls:
-            yield Request(url, callback=self.parse)
+            yield scrapy.Request(url, callback=self.parse)
 
     def parse(self, response: TextResponse):
         pass

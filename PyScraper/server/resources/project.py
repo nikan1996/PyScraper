@@ -52,3 +52,9 @@ class Project(Resource):
     def delete(self, project_id):
         result = ProjectHandler().delete_project(project_id)
         return result
+    
+
+class ProjectAction(Resource):
+    def put(self, project_id):
+        action_parser = reqparse.RequestParser()
+        parser.add_argument('action', type=str, required=True, help='project_name is required')

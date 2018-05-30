@@ -15,7 +15,7 @@ import traceback
 from os import path
 from flask_restful import Api
 from flask import Flask, jsonify
-from PyScraper.server.extensions import db, queue
+from PyScraper.server.extensions import db, spider_cls_queue
 from PyScraper.server.resources.database import Databases, Database
 from PyScraper.server.resources.project import Projects, Project
 
@@ -35,7 +35,7 @@ def create_app(config='PyScraper.config.Config'):
     configure_api(app)
     init_db(app)
     
-    init_spider_loop(queue)
+    init_spider_loop(spider_cls_queue)
     init_app_callbacks(app)
     
     return app
