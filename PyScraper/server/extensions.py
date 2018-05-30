@@ -14,4 +14,4 @@ from PyScraper.server.models.base import BaseMixin
 # from PyScraper.utils.multiprocessing_queue import Queue
 from queue import Queue
 db = SQLAlchemy(session_options={'autocommit': False}, model_class=BaseMixin)
-spider_cls_queue = Queue()
+spidercls_queue = Queue()

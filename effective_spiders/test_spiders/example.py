@@ -11,9 +11,10 @@
 
 import re
 import scrapy
-import time
 from scrapy.crawler import CrawlerProcess
 from scrapy.http import TextResponse
+from twisted.internet import reactor
+from PyScraper.utils.twisted_utils import aiosleep
 
 
 class ExampleItem(scrapy.Item):
@@ -34,10 +35,12 @@ class ExampleSpider(scrapy.Spider):
     def parse(self, response: TextResponse):
         pass
 
+
 class BlockExampleSpider(ExampleSpider):
+    name = 'block_example'
     def parse(self, response: TextResponse):
-        print("example will hang 60 second")
-        time.sleep(60)
+        print("example will hang 60 second ")
+        reactor.callLater(3, self.parse, response)
         print("example was stopped now")
         
         

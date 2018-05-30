@@ -11,16 +11,8 @@
 import pytest
 import pytest_twisted
 from scrapy.mail import MailSender
-from twisted.internet import reactor
-from twisted.internet.defer import Deferred
 
 from PyScraper.utils.mail import render_mail
-
-
-def aiosleep(secs):
-    d = Deferred()
-    reactor.callLater(secs, d.callback, None)
-    return d
 
 
 @pytest.fixture
@@ -51,4 +43,5 @@ def test_send_qq_email(mailer):
 @pytest.mark.skip
 @pytest_twisted.inlineCallbacks
 def test_send_html_table_email(mailer, rendered_html_table_email):
-    yield mailer.send(to=["859905874@qq.com"], subject='（PyScraper发送）错误网站', body=rendered_html_table_email, mimetype='text/html')
+    yield mailer.send(to=["859905874@qq.com"], subject='（PyScraper发送）错误网站', body=rendered_html_table_email,
+                      mimetype='text/html')

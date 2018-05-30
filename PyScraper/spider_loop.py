@@ -11,9 +11,11 @@
 import logging
 from queue import Empty
 
-from twisted.internet import task
-from scrapy.crawler import Crawler
 from scrapy.core.engine import ExecutionEngine
+from scrapy.crawler import Crawler
+from twisted.internet import task
+
+from PyScraper.utils import import_class
 from PyScraper.utils.crawl_process import PyScraperCrawlerProcess
 
 logger = logging.getLogger(__name__)
@@ -22,63 +24,99 @@ logger = logging.getLogger(__name__)
 class ScalableCrawlerProcess(PyScraperCrawlerProcess):
     def __init__(self, queue, in_thread=True, *args, **kwargs):
         self.queue = queue
-        self.spider_cls_bind_crawlers = {}
+        self.spiderclses = {}  # {'cls1':{'spidercls':'cls1','crawler': crawler, 'status': 'start'}}
         super(ScalableCrawlerProcess, self).__init__(in_thread, *args, **kwargs)
     
     def start_loop(self):
-        l = task.LoopingCall(self.check_new_crawlers)
-        l.start(2)  # run check_new_crawler every second
+        t = task.LoopingCall(self.check_new_crawlers)
+        t.start(1)  # run check_new_crawler every second
         self.start()
     
     def check_new_crawlers(self):
         try:
-            item = self.queue.get(timeout=1)  # Must be a spdier class that inherit scrapy.Spider
+            item = self.queue.get(timeout=1)
             action = item.get('action')
             spidercls = item.get('spidercls')
             if not spidercls:
                 logger.error("no spidercls in queue item")
                 raise Exception("no spidercls in queue item")
-            status = self.spider_cls_bind_crawlers.get(str(spidercls), {}).get('status')
+            
+            spidercls_info = self.get_spidercls_info(spidercls)
+            status = spidercls_info.get('status')
+            if action == status:
+                raise Exception("dont pass action which is same as current status")
+            
             if action == 'start':
-                if not status:
-                    self.start_a_crawler(spidercls=spidercls)
                 if status == 'pause':
-                    self.unpause_a_crawler(spidercls=spidercls)
-            if action == 'stop':
-                self.stop_a_crawler(spidercls=spidercls)
-            if action == 'pause':
-                self.pause_a_crawler(spidercls=spidercls)
+                    self.unpause_a_crawler(spidercls_info=spidercls_info)
+                else:
+                    self.start_a_crawler(spidercls=spidercls)
+            elif action == 'stop':
+                if status == 'pause' or 'start':
+                    self.stop_a_crawler(spidercls_info=spidercls_info)
+            elif action == 'pause':
+                if status == 'start':
+                    self.pause_a_crawler(spidercls_info=spidercls_info)
+            else:
+                raise Exception("dont pass unknown action")
+            
+            self.update_spidercls_status(spidercls_info.get('project_id'), 'stop')
+
         except Empty:
-            print("now is empty")
+            print("now spidercls queue is empty")
     
-    def pause_a_crawler(self, *, spidercls):
-        crawler: Crawler = self.spider_cls_bind_crawlers[str(spidercls)].get('crawler')
+    def pause_a_crawler(self, *, spidercls_info: dict):
+        crawler: Crawler = spidercls_info.get('crawler')
         engine: ExecutionEngine = crawler.engine
         engine.pause()
-        self.spider_cls_bind_crawlers[str(spidercls)]['status'] = 'pause'
-        print('pause {}'.format(str(spidercls)))
+        print('pause {}'.format(spidercls_info))
     
-    def unpause_a_crawler(self, *, spidercls):
-        crawler: Crawler = self.spider_cls_bind_crawlers[str(spidercls)].get('crawler')
+    def unpause_a_crawler(self, *, spidercls_info: dict):
+        crawler: Crawler = spidercls_info.get('crawler')
         engine: ExecutionEngine = crawler.engine
         engine.unpause()
-        self.spider_cls_bind_crawlers[str(spidercls)]['status'] = 'start'
-
-        print('unpause {}'.format(str(spidercls)))
+        print('unpause {}'.format(spidercls_info))
     
-    def start_a_crawler(self, *, spidercls):
-        self.crawl(crawler_or_spidercls=spidercls)
+    def start_a_crawler(self, *, spidercls: str):
+        self.crawl(crawler_or_spidercls=import_class(spidercls))
     
-    def stop_a_crawler(self, *, spidercls):
-        crawler: Crawler = self.spider_cls_bind_crawlers[str(spidercls)].get('crawler')
-        self.spider_cls_bind_crawlers[str(spidercls)]['status'] = 'stop'
-
+    def stop_a_crawler(self, *, spidercls_info: dict):
+        crawler: Crawler = spidercls_info.get('crawler')
         crawler.stop()
+    
+    def _crawl(self, crawler, *args, crawler_or_spidercls=None, **kwargs):
+        self.crawlers.add(crawler)
+        d = crawler.crawl(*args, **kwargs)
+        self._active.add(d)
+        
+        def _done(result):
+            self.crawlers.discard(crawler)
+            self._active.discard(d)
+            self.crawler_stop(crawler_or_spidercls)
+            return result
+        
+        return d.addBoth(_done)
     
     def crawl(self, crawler_or_spidercls, *args, **kwargs):
         crawler = self.create_crawler(crawler_or_spidercls)
-        self.spider_cls_bind_crawlers[str(crawler_or_spidercls)] = {'crawler': crawler, 'status': 'start'}
-        return self._crawl(crawler, *args, **kwargs)
+        self.spiderclses[crawler_or_spidercls] = {'spidercls':crawler_or_spidercls,'crawler': crawler, 'status': 'start'}
+        return self._crawl(crawler, *args, crawler_or_spidercls=crawler_or_spidercls, **kwargs)
+    
+    def crawler_stop(self, spidercls):
+        spidercls_info = self.get_spidercls_info(spidercls)
+        self.update_spidercls_status(spidercls_info.get('project_id'), 'stop')
+    
+    def get_spidercls_info(self, spidercls: str):
+        return self.spiderclses.get(spidercls, {})
+    
+    def update_spidercls_status(self, spidercls: str, status):
+        spidercls_info = self.get_spidercls_info(spidercls)
+        project_id = spidercls_info['project_id']
+        self._update_project_status(project_id=project_id, status=status)
+        spidercls_info['status'] = status
+        
+    def _update_project_status(self, project_id, status):
+        print('project{} is {}'.format(project_id, status))
 
 
 def start_spider_loop(queue):
@@ -97,4 +135,4 @@ def start_spider_loop(queue):
 
 if __name__ == '__main__':
     pass
-    # start_spider_loop(spider_cls_queue=Queue())
+    # start_spider_loop(spidercls_queue=Queue())

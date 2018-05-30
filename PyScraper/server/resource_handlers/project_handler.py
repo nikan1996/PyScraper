@@ -9,9 +9,10 @@
 @time: 2018/5/28 下午2:12
 """
 from PyScraper.server.extensions import db
-from PyScraper.server.extensions import spider_cls_queue
+from PyScraper.server.extensions import spidercls_queue
 from PyScraper.server.models.base import convert_query_result2dict
 from PyScraper.server.models.project import Project
+from PyScraper.utils import import_class
 
 
 class ProjectHandler:
@@ -46,6 +47,13 @@ class ProjectHandler:
         db.session.add(project)
         db.session.commit()
         return convert_query_result2dict(project)
+    
+    def update_project_status(self, project_id, status):
+        project = Project.query.filter_by(project_id=project_id, is_deleted=0).first()
+        if project:
+            project.status = status
+            db.session.commit()
+        return convert_query_result2dict(project)
 
 
 class ProjectActionHandler:
@@ -61,10 +69,10 @@ class ProjectActionHandler:
             return {"error": "current action is same "}
         if project.status == self.STOP and action == self.PAUSE:
             return {"error": "current action change is not allowed"}
-        spider_cls = project.setting.get('spider_cls', None)
-        if not spider_cls:
+        spidercls = project.setting.get('spidercls', None)
+        if not spidercls:
             return {"error": "project dont choose a concrete spider script"}
-        item = {'action': action, spider_cls: eval(spider_cls)}
-        spider_cls_queue.put(item)
+        item = {'action': action, 'spidercls': spidercls, 'project_id': project_id}
+        spidercls_queue.put(item)
         project.status = action
         return item
