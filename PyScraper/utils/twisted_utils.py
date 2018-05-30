@@ -13,17 +13,12 @@ from twisted.internet.defer import Deferred
 
 
 def aiosleep(secs):
+    """
+    example usage:
+    @inlinecallbacks
+    def x():
+        yield aiosleep(100)
+    """
     d = Deferred()
     reactor.callLater(secs, d.callback, None)
     return d
-
-
-from twisted.internet import reactor
-from twisted.internet.defer import Deferred
-
-
-def aiosleep(secs):
-    d = Deferred()
-    reactor.callLater(secs, d.callback, None)
-    return d
-

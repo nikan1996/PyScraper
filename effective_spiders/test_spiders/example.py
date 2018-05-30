@@ -15,7 +15,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.http import TextResponse
 from twisted.internet import reactor
 from PyScraper.utils.twisted_utils import aiosleep
-
+from twisted.internet.defer import inlineCallbacks
 
 class ExampleItem(scrapy.Item):
     # define the fields for your item here like:
@@ -38,12 +38,19 @@ class ExampleSpider(scrapy.Spider):
 
 class BlockExampleSpider(ExampleSpider):
     name = 'block_example'
+    custom_settings = {
+        'DOWNLOAD_DELAY': 2,
+        'CONCURRENT_REQUESTS': 1
+    }
     def parse(self, response: TextResponse):
         print("example will hang 60 second ")
-        reactor.callLater(3, self.parse, response)
+        for i in range(30):
+            yield scrapy.Request("http://example.com/", callback=self.parse, dont_filter=True)
         print("example was stopped now")
-        
-        
+
+
+class BlockExampleSpider2(BlockExampleSpider):
+    pass
 if __name__ == '__main__':
     settings = {
         "TELNETCONSOLE_ENABLED": False,
