@@ -70,9 +70,7 @@ def get_classes_from_submodules(submodules, class_type=None):
     for module in submodules:
         for name, obj in inspect.getmembers(module):
             if inspect.isclass(obj):
-                if not class_type:
-                    classes.append(obj)
-                if class_type and issubclass(obj, class_type):
+                if not class_type or (class_type and issubclass(obj, class_type)):
                     classes.append(obj)
     return classes
 

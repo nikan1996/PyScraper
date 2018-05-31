@@ -88,7 +88,7 @@
                 if (this.active++ > 2) this.active = 0;
             },
             submitForm(formName) {
-                this.$refs[formName].validate((valid, object) => {
+                this.$refs[formName].validate((valid) => {
                     if (valid) {
                         alert('submit!');
                         router.push({path: '/projects'})

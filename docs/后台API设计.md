@@ -32,11 +32,53 @@ Action: Start, Stop, Pause
 
 获取Database列表
 
-`GET /databases`
+```
+GET /databases
+success:
+[{
+  "database_name": "db1",
+  config: {
+        'host': 'localhost',
+        'port': '3306',
+        'user': 'root',
+        'password': '123456',
+        'database': 'test_pyscraper',
+    },
+},
+...
+]
+```
+
+
 
 新建Database
 
-`PUT /database`
+```
+PUT /database
+json:{
+  "database_name": "db1",
+  config: {
+        'host': 'localhost',
+        'port': '3306',
+        'user': 'root',
+        'password': '123456',
+        'database': 'test_pyscraper',
+    },
+}
+success:
+{
+  "database_name": "db1",
+  config: {
+        'host': 'localhost',
+        'port': '3306',
+        'user': 'root',
+        'password': '123456',
+        'database': 'test_pyscraper',
+    },
+}
+fail:
+{"error": "db is unavaliable"}
+```
 
 删除某个Database
 
@@ -79,3 +121,6 @@ GET /spider/debug/
 
 
 ### 
+```
+
+```

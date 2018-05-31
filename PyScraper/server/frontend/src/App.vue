@@ -5,7 +5,6 @@
                 <el-menu id="elmenu1"
                          default-active="1"
                          class="el-menu-vertical-demo"
-
                          background-color="#545c64"
                          text-color="#fff"
                          active-text-color="#ffd04b"
@@ -26,12 +25,12 @@
             </el-aside>
             <el-container>
                 <!--<el-header>-->
-<!--&lt;!&ndash;<el-breadcrumb separator-class="el-icon-arrow-right">&ndash;&gt;-->
-  <!--&lt;!&ndash;<el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>&ndash;&gt;-->
-  <!--&lt;!&ndash;<el-breadcrumb-item>活动管理</el-breadcrumb-item>&ndash;&gt;-->
-  <!--&lt;!&ndash;<el-breadcrumb-item>活动列表</el-breadcrumb-item>&ndash;&gt;-->
-  <!--&lt;!&ndash;<el-breadcrumb-item>活动详情</el-breadcrumb-item>&ndash;&gt;-->
-<!--&lt;!&ndash;</el-breadcrumb>&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-breadcrumb separator-class="el-icon-arrow-right">&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-breadcrumb-item :to="{ path: '/index' }">首页</el-breadcrumb-item>&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-breadcrumb-item>活动管理</el-breadcrumb-item>&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-breadcrumb-item>活动列表</el-breadcrumb-item>&ndash;&gt;-->
+                <!--&lt;!&ndash;<el-breadcrumb-item>活动详情</el-breadcrumb-item>&ndash;&gt;-->
+                <!--&lt;!&ndash;</el-breadcrumb>&ndash;&gt;-->
                 <!--</el-header>-->
                 <!--<el-main>-->
                 <router-view></router-view>
@@ -39,13 +38,10 @@
                 <el-footer height="20px">PyScraper Copyright ©nikan 859905874@qq.com</el-footer>
             </el-container>
         </el-container>
-
-
     </div>
 </template>
 
 <script>
-
     export default {
         name: 'app',
         components: {}
@@ -59,7 +55,7 @@
         color: #333;
         text-align: center;
 
-padding-top: 20px;
+        padding-top: 20px;
     }
 
     .el-footer {
@@ -86,7 +82,7 @@ padding-top: 20px;
         color: #333;
         text-align: center;
         line-height: 160px;
-align-items:flex-end;
+        align-items: flex-end;
 
     }
 
