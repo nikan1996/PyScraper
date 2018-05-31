@@ -8,7 +8,7 @@
 
 @time: 2018/5/24 下午12:37
 """
-with open("关于下达温州市2016年公益性科技计划项目及经费的通知.html", 'r') as f:
+with open("1.html", 'r') as f:
     content = f.read()
 
 import re

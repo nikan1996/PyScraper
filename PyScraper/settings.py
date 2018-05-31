@@ -35,7 +35,7 @@ FEED_EXPORT_ENCODING = 'utf-8'
 
 CHROMIUM_URL = '127.0.0.1:9000'
 TELNETCONSOLE_ENABLED = False
-
+SPIDER_SCRIPT_MODULE = 'effective_spiders'
 MAIL_TEMPLATES_PATH = abspath(join(dirname(__file__), 'utils', 'templates', 'mail_templates.html'))
 # See also autothrottle settings and docs
 # DOWNLOAD_DELAY = 3

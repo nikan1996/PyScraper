@@ -3,6 +3,9 @@
         <router-link to="/new_project">
             <el-button type="primary">新建项目</el-button>
         </router-link>
+        <router-link to="/new_project">
+            <el-button type="primary">新建纠错项目</el-button>
+        </router-link>
         <el-table :data="project_data" stripe style="width: 100%">
             <el-table-column prop="tag" label="标签" width="180">
             </el-table-column>
@@ -74,7 +77,7 @@
 
 
 <style scoped>
-    #projects{
+    #projects {
 
     }
 </style>
