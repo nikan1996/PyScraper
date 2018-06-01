@@ -25,6 +25,7 @@ class Databases(Resource):
         return result
     
     def put(self):
+        print(1)
         # create a new project
         args = parser.parse_args()
         database_name = args.database_name
@@ -35,7 +36,7 @@ class Databases(Resource):
             result = handler.create_database(database_name, config)
             return result
         else:
-            return {"error": error}
+            return {"error": error}, 403
 
 
 class Database(Resource):

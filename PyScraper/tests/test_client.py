@@ -77,9 +77,12 @@ def test_database_api(client):
     
     # create database
     post_data = json.dumps(data)
+    print(post_data)
     response = client.put('/databases', data=post_data, content_type='application/json')
+    print(response.data)
     assert response.status_code == 200
     text = dictify(response)
+    print(text)
     assert less_equal(text, data) is True
     
     response = client.get('/database/{}'.format(database_id))

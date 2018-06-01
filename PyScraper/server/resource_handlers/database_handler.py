@@ -28,7 +28,7 @@ class DatabaseHandler:
             connection = pymysql.connect(**config)
             connection.close()
         except Exception as e:
-            return e
+            return str(e)
         return 0
     
     def create_database(self, database_name, config):

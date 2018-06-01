@@ -74,13 +74,16 @@ def init_app_callbacks(app):
 
 def configure_api(app):
     api = Api(app)
-    
+
+    @app.route("/healthz")
+    def health():
+        return "ready to go!\n", 200
     api.add_resource(Projects, '/projects')
     api.add_resource(Project, '/project/<int:project_id>')
     
     api.add_resource(Databases, '/databases')
     api.add_resource(Database, '/database/<int:database_id>')
-
+    
 
 def configure_logging(app):
     config_file = '{project_path}/logger.json'

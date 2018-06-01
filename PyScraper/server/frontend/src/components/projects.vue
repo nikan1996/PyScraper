@@ -1,10 +1,10 @@
 <template>
     <div id="projects">
-        <router-link to="/new_project">
+        <router-link to="/create_project">
             <el-button type="primary">新建项目</el-button>
         </router-link>
-        <router-link to="/new_project">
-            <el-button type="primary">新建纠错项目</el-button>
+        <router-link to="/create_gov_project">
+            <el-button type="primary">新建政府项目</el-button>
         </router-link>
         <el-table :data="project_data" stripe style="width: 100%">
             <el-table-column prop="tag" label="标签" width="180">

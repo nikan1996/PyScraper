@@ -3,7 +3,7 @@
         <el-container id="elcontainer1">
             <el-aside width="200px">
                 <el-menu id="elmenu1"
-                         default-active="1"
+                         :default-active="current_active"
                          class="el-menu-vertical-demo"
                          background-color="#545c64"
                          text-color="#fff"
@@ -44,7 +44,14 @@
 <script>
     export default {
         name: 'app',
-        components: {}
+        components: {},
+        computed: {
+            current_active: function(){
+                let current_route_path = this.$router.history.current.fullPath;
+                let routes_dict = {"/index": "1", "projects": "2", "/databases": "3"};
+                return routes_dict[current_route_path]
+            }
+        }
     }
 </script>
 

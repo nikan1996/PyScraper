@@ -1,0 +1,10 @@
+[2018-05-30 06:16:11,813] [INFO  ]  [app       :55]  [140736670852032] <class 'PyScraper.server.models.database.Database'>
+[2018-05-30 06:16:11,813] [INFO  ]  [app       :56]  [140736670852032] <class 'PyScraper.server.models.project.Project'>
+[2018-05-30 06:16:11,847] [INFO  ]  [app       :58]  [140736670852032] Create all tables!
+[2018-05-30 06:16:11,854] [INFO  ]  [log       :146]  [123145448943616] Scrapy 1.5.0 started (bot: scrapybot)
+[2018-05-30 06:16:11,873] [INFO  ]  [log       :149]  [123145448943616] Versions: lxml 4.2.1.0, libxml2 2.9.8, cssselect 1.0.3, parsel 1.4.0, w3lib 1.19.0, Twisted 18.4.0, Python 3.6.2 (default, Jul 17 2017, 16:44:45) - [GCC 4.2.1 Compatible Apple LLVM 8.1.0 (clang-802.0.42)], pyOpenSSL 18.0.0 (OpenSSL 1.1.0h  27 Mar 2018), cryptography 2.2.2, Platform Darwin-16.7.0-x86_64-i386-64bit
+[2018-05-30 06:16:12,022] [INFO  ]  [app       :55]  [140736670852032] <class 'PyScraper.server.models.database.Database'>
+[2018-05-30 06:16:12,022] [INFO  ]  [app       :56]  [140736670852032] <class 'PyScraper.server.models.project.Project'>
+[2018-05-30 06:16:12,051] [INFO  ]  [app       :58]  [140736670852032] Create all tables!
+[2018-05-30 06:16:12,057] [INFO  ]  [log       :146]  [123145454198784] Scrapy 1.5.0 started (bot: scrapybot)
+[2018-05-30 06:16:12,058] [INFO  ]  [log       :149]  [123145454198784] Versions: lxml 4.2.1.0, libxml2 2.9.8, cssselect 1.0.3, parsel 1.4.0, w3lib 1.19.0, Twisted 18.4.0, Python 3.6.2 (default, Jul 17 2017, 16:44:45) - [GCC 4.2.1 Compatible Apple LLVM 8.1.0 (clang-802.0.42)], pyOpenSSL 18.0.0 (OpenSSL 1.1.0h  27 Mar 2018), cryptography 2.2.2, Platform Darwin-16.7.0-x86_64-i386-64bit

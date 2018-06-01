@@ -1,11 +1,19 @@
 <template>
     <div id="database">
-        <el-tabs type="border-card" :model="activeName">
+        <el-tabs type="border-card" v-model="activeName" before-leave="clearFormValidate('new_db')">
             <el-tab-pane label="数据库管理" name="db_management">
-                <el-table :data="db_data" stripe style="width: 100%">
-                    <el-table-column prop="db_name" label="连接名" width="180">
+                <el-table :data="db_data" stripe style="width: 100%"
+                          :default-sort="{prop: 'update_timestamp', order: 'descending'}">
+                    <el-table-column prop="database_name" label="连接名" width="180">
+                    </el-table-column>
+                    <el-table-column prop="update_timestamp" label="更新时间" width="180">
                     </el-table-column>
                     <el-table-column label="操作" width="180">
+                        <template slot-scope="scope">
+                            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                            <el-button type="text" size="small">编辑</el-button>
+                            <el-button type="text" size="small">删除</el-button>
+                        </template>
                     </el-table-column>
                 </el-table>
                 <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
@@ -15,29 +23,28 @@
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-circle-plus-outline"></i>添加数据库</span>
-                <el-form :model="new_db" :rules="form_check_rules" ref="new_db" label-width="100px"
-                         class="new_db">
-                    <el-form-item label="连接名" prop="name">
-                        <el-input :model="new_db.database_name" suffixIcon="el-icon-edit"></el-input>
+                <el-form :model="new_db" ref="new_db" :rules="form_check_rules" label-width="100px">
+                    <el-form-item label="连接名" prop="database_name">
+                        <el-input v-model="new_db.database_name" suffixIcon="el-icon-edit"></el-input>
                     </el-form-item>
-                    <el-form-item label="地址" prop="db_host">
-                        <el-input :model="new_db.config.db_host" placeholder="localhost"></el-input>
+                    <el-form-item label="地址" prop="config.host">
+                        <el-input v-model="new_db.config.host" placeholder="localhost"></el-input>
                     </el-form-item>
-                    <el-form-item label="端口" prop="db_port">
-                        <el-input :model.number="new_db.config.db_port" placeholder="3306"></el-input>
+                    <el-form-item label="端口" prop="config.port">
+                        <el-input v-model.number="new_db.config.port" placeholder="3306"></el-input>
                     </el-form-item>
-                    <el-form-item label="数据库名称" prop="db_name">
-                        <el-input :model="new_db.config.db_name" suffixIcon="el-icon-edit"></el-input>
+                    <el-form-item label="数据库名称" prop="config.database">
+                        <el-input v-model="new_db.config.database" suffixIcon="el-icon-edit"></el-input>
                     </el-form-item>
-                    <el-form-item label="用户名" prop="db_user">
-                        <el-input :model="new_db.config.db_user" placeholder="user"></el-input>
+                    <el-form-item label="用户名" prop="config.user">
+                        <el-input v-model="new_db.config.user" placeholder="user"></el-input>
                     </el-form-item>
-                    <el-form-item label="密码" prop="db_password">
-                        <el-input :model="new_db.config.db_password" placeholder="password" type="password"></el-input>
+                    <el-form-item label="密码" prop="config.password">
+                        <el-input v-model="new_db.config.password" placeholder="password" type="password"></el-input>
                     </el-form-item>
 
                     <el-form-item label="类型" prop="db_type">
-                        <el-select :model="new_db.db_type" defaultFirstOption placeholder="请选择">
+                        <el-select v-model="new_db.db_type" defaultFirstOption placeholder="请选择">
                             <el-option
                                     v-for="item in db_types"
                                     :key="item.value"
@@ -53,7 +60,6 @@
                 </el-form>
             </el-tab-pane>
 
-
         </el-tabs>
 
     </div>
@@ -63,6 +69,9 @@
 
     export default {
         name: "Databases",
+        created() {
+            this.fetchData();
+        },
         data() {
             return {
                 activeName: "db_management",
@@ -76,46 +85,45 @@
                         database: ''
                     },
                     db_type: ''
-
                 },
                 form_check_rules: {
-                    name: [{
+                    database_name: [{
                         required: true,
                         message: '请输入连接名',
                         trigger: 'blur'
                     }],
-                    db_name: [{
-                        required: true,
-                        message: '请输入数据库名称',
-                        trigger: 'blur'
-                    }],
-                    db_host: [{
-                        required: true,
-                        message: '请输入数据库地址',
-                        trigger: 'blur'
-                    }],
-                    db_port: [{
-                        required: true,
-                        message: '请输入数据库端口',
-                        trigger: 'blur'
-                    }],
-                    db_user: [{
-                        required: true,
-                        message: '请输入数据库用户名',
-                        trigger: 'blur'
-                    }],
-                    db_password: [{
-                        required: true,
-                        message: '请输入数据库密码',
-                        trigger: 'blur'
-                    }],
+                    config: {
+                        database: [{
+                            required: true,
+                            message: '请输入数据库名称',
+                            trigger: 'blur'
+                        }],
+                        host: [{
+                            required: true,
+                            message: '请输入数据库地址',
+                            trigger: 'blur'
+                        }],
+                        port: [{
+                            required: true,
+                            message: '请输入数据库端口',
+                            trigger: 'blur'
+                        }],
+                        user: [{
+                            required: true,
+                            message: '请输入数据库用户名',
+                            trigger: 'blur'
+                        }],
+                        password: [{
+                            required: true,
+                            message: '请输入数据库密码',
+                            trigger: 'blur'
+                        }],
+                    },
                     db_type: [{
                         required: true,
                         message: '请输入数据库类型',
                         trigger: 'blur'
                     }],
-
-
                 },
                 db_types: [
                     {
@@ -128,29 +136,68 @@
                     }
                 ],
                 currentPage: 1,
-                total: 0,
                 db_type_default_value: "mysql",
                 db_data: [],
             };
         },
+        computed: {
+            total: function () {
+                return this.db_data.length
+            },
+            show_data:function () {
+                return this.db_data
+            }
+        },
         methods: {
+            fetchData() {//获取数据库列表
+                axios.get('/databases').then((response) => {
+                    this.db_data = response.data;
+                }).catch((response) => {
+                    console.log(response);
+                    this.$message.error({
+                        message: "获取数据库失败啦，检查下你的网络吧"
+                    });
+                });
+            },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        alert('submit!');
                         axios.put(
                             '/databases',
-                            this.$newdb
+                            JSON.stringify(this.new_db),
+                            {
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            }
+                        ).then(() => {
+                            this.$message.success({
+                                message: "成功添加数据库"
+                            });
+                            this.resetForm(formName);
+                            this.fetchData();
+                        }).catch(() => {
+                            console.log(response);
+                            this.$message.error({
+                                message: "添加数据库失败啦请检查你的数据库配置是否能正确连接"
+                            });
+                        });
+                    }
+                    else {
+                        this.$message.error({
+                            message: "请先正确填写数据库配置"
+                        });
 
-                        )
-                    } else {
-                        console.log('error submit!!');
                         return false;
                     }
                 });
             },
             resetForm(formName) {
                 this.$refs[formName].resetFields();
+            },
+            clearFormValidate(formName) {
+                console.log("error?");
+                this.$refs[formName].clearValidate();
             },
 
             handleSizeChange(val) {

@@ -34,6 +34,10 @@ const routes = [
         path: '/create_project',
         component: New_project
     },
+    {
+        path: '/create_gov_project',
+        component: New_project
+    },
 
 ];
 
