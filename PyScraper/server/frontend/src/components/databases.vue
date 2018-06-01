@@ -1,14 +1,19 @@
 <template>
     <div id="database">
-        <el-tabs type="border-card" v-model="activeName" before-leave="clearFormValidate('new_db')">
+        <el-tabs id='eltabs' type="card" v-model="activeName">
             <el-tab-pane label="数据库管理" name="db_management">
-                <el-table :data="db_data" stripe style="width: 100%"
-                          :default-sort="{prop: 'update_timestamp', order: 'descending'}">
-                    <el-table-column prop="database_name" label="连接名" width="180">
+                <el-table id='dbtable' :data="db_data.slice((currentPage-1)*pagesize,currentPage*pagesize)" stripe
+                          style="width: 100%;"
+                          :default-sort="{prop: 'update_timestamp', order: 'descending'}"
+                >
+                    <el-table-column prop="database_name" label="连接名">
                     </el-table-column>
-                    <el-table-column prop="update_timestamp" label="更新时间" width="180">
+                    <el-table-column prop="update_timestamp" label="更新时间">
                     </el-table-column>
-                    <el-table-column label="操作" width="180">
+                    <el-table-column
+                            fixed="right"
+                            label="操作"
+                            width="180">
                         <template slot-scope="scope">
                             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
                             <el-button type="text" size="small">编辑</el-button>
@@ -16,8 +21,9 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                               :current-page="currentPage" :page-sizes="[10, 20, 50]" :page-size="10"
+                <div id="letPaginationBottom"></div>
+                <el-pagination id="ele_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                               :current-page="currentPage" :page-sizes="[5, 10]" :page-size="pagesize"
                                layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
             </el-tab-pane>
@@ -136,6 +142,7 @@
                     }
                 ],
                 currentPage: 1,
+                pagesize: 5,
                 db_type_default_value: "mysql",
                 db_data: [],
             };
@@ -144,9 +151,10 @@
             total: function () {
                 return this.db_data.length
             },
-            show_data:function () {
+            show_data: function () {
                 return this.db_data
-            }
+            },
+
         },
         methods: {
             fetchData() {//获取数据库列表
@@ -195,15 +203,14 @@
             resetForm(formName) {
                 this.$refs[formName].resetFields();
             },
-            clearFormValidate(formName) {
-                console.log("error?");
-                this.$refs[formName].clearValidate();
-            },
+
 
             handleSizeChange(val) {
+                this.pagesize = val;
                 console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
+                this.currentPage = val;
                 console.log(`当前页: ${val}`);
             }
 
@@ -212,5 +219,24 @@
 </script>
 
 <style scoped>
+    #eltabs {
+        /*min-height: 600px;*/
 
+    }
+
+    #database {
+        /*overflow:auto;*/
+    }
+    #dbtable{
+        /*position: relative;*/
+        /*min-height: 600px;*/
+        /*top: 0;*/
+        /*left: 0;*/
+        /*right: 0;*/
+        /*bottom: 0;*/
+    }
+    /*#letPaginationBottom{*/
+    /*min-height: 200px;*/
+    /*overflow:auto;*/
+    /*}*/
 </style>
