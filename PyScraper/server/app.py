@@ -18,6 +18,7 @@ from flask import Flask, jsonify
 from PyScraper.server.extensions import db, spidercls_queue
 from PyScraper.server.resources.database import Databases, Database
 from PyScraper.server.resources.project import Projects, Project
+from PyScraper.server.resources.spider import Spiders
 
 from PyScraper.spider_loop import start_spider_loop
 from PyScraper.utils import run_in_thread
@@ -84,6 +85,7 @@ def configure_api(app):
     api.add_resource(Databases, '/databases')
     api.add_resource(Database, '/database/<int:database_id>')
     
+    api.add_resource(Spiders, '/spiders')
 
 def configure_logging(app):
     config_file = '{project_path}/logger.json'

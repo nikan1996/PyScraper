@@ -185,7 +185,6 @@
                             this.resetForm(formName);
                             this.fetchData();
                         }).catch(() => {
-                            console.log(response);
                             this.$message.error({
                                 message: "添加数据库失败啦请检查你的数据库配置是否能正确连接"
                             });

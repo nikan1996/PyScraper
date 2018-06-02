@@ -12,8 +12,7 @@ from PyScraper.server.extensions import db
 from PyScraper.server.extensions import spidercls_queue
 from PyScraper.server.models.base import convert_query_result2dict
 from PyScraper.server.models.project import Project
-from PyScraper.utils import import_class
-import inspect
+
 
 class ProjectHandler:
     def get_all_projects(self):
