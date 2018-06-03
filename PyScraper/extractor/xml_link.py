@@ -24,7 +24,7 @@ from scrapy.http import HtmlResponse
 class DataProxyXmlLinkExtractor:
     def __init__(self):
         self.url = None  # 网站url
-        search_pattern = "['\"](/module/jpage/.+?dataproxy\.jsp\?page=1.+?)['\"]"
+        search_pattern = "['\"](/module/jpage/.*?dataproxy\.jsp\?page=1.+?)['\"]"
         self.search_compile = re.compile(search_pattern)
         self.dataproxy_first_page_url = None
         

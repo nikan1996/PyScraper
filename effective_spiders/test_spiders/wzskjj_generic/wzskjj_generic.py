@@ -49,10 +49,9 @@ class WzskjjSpider(Spider):
                 'table_head': ['正确词', '错误词', '网站地址'],
                 'table_data': table_data}
             body = render_mail(render_dict['title'], render_dict['table_head'], render_dict['table_data'])
-            self.mailer.send(to=["859905874@qq.com"], subject='PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
+            # self.mailer.send(to=["859905874@qq.com"], subject='PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
         for link in links:
-            # print(link)
             yield Request(link.url, callback=self.parse, errback=self.errorback)
         """
         获取dataproxy接口的链接
@@ -60,6 +59,7 @@ class WzskjjSpider(Spider):
         # d = Deffer
         data_proxy_extractor = DataProxyXmlLinkExtractor()
         if data_proxy_extractor.has_dataproxy_link(response):
+            
             yield data_proxy_extractor.gen_dataproxy_links()
             # for data_proxy_link in data_proxy_links:
                 # yield Request(data_proxy_link, callback=self.yield_dataproxy_link, meta={'data_proxy_extractor': data_proxy_extractor})
