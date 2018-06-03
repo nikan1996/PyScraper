@@ -64,14 +64,14 @@ class ProjectActionHandler:
     def put_item_into_spider_loop(self, project_id, action):
         project = Project.query.filter_by(project_id=project_id, is_deleted=0).first()
         if not project:
-            return None
+            raise Exception("no project")
         if project.status == action:
-            return {"error": "current action is same "}
+            raise Exception("current action is same ")
         if project.status == self.STOP and action == self.PAUSE:
-            return {"error": "current action change is not allowed"}
+            raise Exception("current action change is not allowed")
         spidercls = project.setting.get('spidercls', None)
         if not spidercls:
-            return {"error": "project dont choose a concrete spider script"}
+            raise Exception("project dont choose a concrete spider script")
         item = {'action': action, 'spidercls': spidercls, 'project_id': project_id}
         spidercls_queue.put(item)
         project.status = action

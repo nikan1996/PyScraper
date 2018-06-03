@@ -63,7 +63,7 @@
     import router from "vue-router";
 
     export default {
-        name: 'New_project',
+        name: 'New_gov_project',
         data() {
             return {
                 active: 1,

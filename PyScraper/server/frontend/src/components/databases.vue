@@ -23,7 +23,7 @@
                 </el-table>
                 <div id="letPaginationBottom"></div>
                 <el-pagination id="ele_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                               :current-page="currentPage" :page-sizes="[5, 10]" :page-size="pagesize"
+                               :current-page="currentPage" :page-sizes="[5, 9, 10]" :page-size="pagesize"
                                layout="total, sizes, prev, pager, next, jumper" :total="total">
                 </el-pagination>
             </el-tab-pane>
@@ -71,7 +71,7 @@
     </div>
 </template>
 <script>
-    import axios from 'axios'
+    import axios from 'axios';
 
     export default {
         name: "Databases",
@@ -142,7 +142,7 @@
                     }
                 ],
                 currentPage: 1,
-                pagesize: 5,
+                pagesize: 9,
                 db_type_default_value: "mysql",
                 db_data: [],
             };

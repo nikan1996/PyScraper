@@ -13,30 +13,31 @@ import logging
 import logging.config
 import traceback
 from os import path
-from flask_restful import Api
+
+import sqlalchemy
 from flask import Flask, jsonify
+from flask_restful import Api
+from sqlalchemy_utils import database_exists, create_database
+
 from PyScraper.server.extensions import db, spidercls_queue
 from PyScraper.server.resources.database import Databases, Database
-from PyScraper.server.resources.project import Projects, Project
+from PyScraper.server.resources.project import Projects, Project, ProjectAction
 from PyScraper.server.resources.spider import Spiders
 
-from PyScraper.spider_loop import start_spider_loop
 from PyScraper.utils import run_in_thread
-import sqlalchemy
-from sqlalchemy_utils import database_exists, create_database
 
 logger = logging.getLogger(__name__)
 
 
-def create_app(config='PyScraper.config.Config'):
+def create_app(config='PyScraper.config.Config', spider_loop=True):
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
     app = Flask("PyScraper", template_folder=tmpl_dir)
     app.config.from_object(config)
     configure_logging(app)
     configure_api(app)
     init_db(app)
-    
-    init_spider_loop(spidercls_queue)
+    if spider_loop:
+        init_spider_loop(spidercls_queue)
     init_app_callbacks(app)
     
     return app
@@ -61,6 +62,7 @@ def init_db(app):
 
 def init_spider_loop(queue):
     """单一进程内初始化spider事件循环"""
+    from PyScraper.spider_loop import start_spider_loop
     run_in_thread(start_spider_loop, queue)
 
 
@@ -75,17 +77,19 @@ def init_app_callbacks(app):
 
 def configure_api(app):
     api = Api(app)
-
+    
     @app.route("/healthz")
     def health():
         return "ready to go!\n", 200
+    
     api.add_resource(Projects, '/projects')
     api.add_resource(Project, '/project/<int:project_id>')
-    
+    api.add_resource(ProjectAction, '/project_action/<int:project_id>')
     api.add_resource(Databases, '/databases')
     api.add_resource(Database, '/database/<int:database_id>')
     
     api.add_resource(Spiders, '/spiders')
+
 
 def configure_logging(app):
     config_file = '{project_path}/logger.json'

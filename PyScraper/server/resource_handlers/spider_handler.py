@@ -17,7 +17,7 @@ class SpiderHandler:
     def get_all_spiders(self):
         modules = walk_modules(SPIDER_SCRIPT_MODULE)
         spiders = load_spiders(submodules=modules)
-        return [(spider.name, get_full_classname(spider)) for spider in spiders]
+        return dict((spider.name, get_full_classname(spider)) for spider in spiders)
     
     def create_spider(self):
         pass

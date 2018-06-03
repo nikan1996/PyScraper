@@ -4,7 +4,7 @@ import Index from './components/index.vue'
 import Project from './components/projects.vue'
 import Databases from './components/databases.vue'
 import New_project from './components/project/new_project.vue'
-
+import New_gov_project from './components/project/new_gov_project.vue'
 Vue.use(VueRouter);
 
 
@@ -36,7 +36,7 @@ const routes = [
     },
     {
         path: '/create_gov_project',
-        component: New_project
+        component: New_gov_project
     },
 
 ];

@@ -19,6 +19,7 @@ from PyScraper.extractor.error_correction import ErrorCorrectionExtractor
 from typing import List
 from PyScraper.extractor.html_link import HtmlLinkExtractor
 from PyScraper.extractor.xml_link import DataProxyXmlLinkExtractor
+from PyScraper.utils.mail import render_mail
 
 
 class WzskjjSpider(Spider):
@@ -42,7 +43,13 @@ class WzskjjSpider(Spider):
         result = self.error_correction_extractor.find_error(response)
         if result:
             print("error_correction_result", result)
-            # self.mailer.send(to=["859905874@qq.com"], subject='Test', body='<html><body><h1>Hello</h1></body></html>', mimetype='text/html')
+            table_data = [{'correct': r['correct'], 'error': r['error'], 'url': response.url} for r in result]
+            render_dict = {
+                'title': '（PyScraper发送）错误网站',
+                'table_head': ['正确词', '错误词', '网站地址'],
+                'table_data': table_data}
+            body = render_mail(render_dict['title'], render_dict['table_head'], render_dict['table_data'])
+            self.mailer.send(to=["859905874@qq.com"], subject='PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
         for link in links:
             # print(link)
@@ -71,7 +78,7 @@ class WzskjjSpider(Spider):
 if __name__ == '__main__':
     settings = {
         "TELNETCONSOLE_ENABLED": False,
-        "LOG_FILE": "./wzkjj.log"
+        # "LOG_FILE": "./wzkjj.log"
     }
     process = CrawlerProcess(settings=settings)
     process.crawl(WzskjjSpider)

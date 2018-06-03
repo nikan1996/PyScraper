@@ -15,6 +15,8 @@ from scrapy.core.engine import ExecutionEngine
 from scrapy.crawler import Crawler
 from twisted.internet import task
 
+from PyScraper.server.app import create_app
+from PyScraper.server.resource_handlers.project_handler import ProjectHandler
 from PyScraper.utils import import_class
 from PyScraper.utils.crawl_process import PyScraperCrawlerProcess
 
@@ -23,13 +25,14 @@ logger = logging.getLogger(__name__)
 
 class ScalableCrawlerProcess(PyScraperCrawlerProcess):
     def __init__(self, queue, in_thread=True, *args, **kwargs):
+        self.app = create_app(spider_loop=False)
         self.queue = queue
         self.spiderclses = {}  # {'cls1':{'spidercls':'cls1','crawler': crawler, 'status': 'start', 'project_id': 1}}
         super(ScalableCrawlerProcess, self).__init__(in_thread, *args, **kwargs)
     
     def start_loop(self):
         t = task.LoopingCall(self.check_new_crawlers)
-        t.start(1)  # run check_new_crawler every second
+        t.start(0.5)  # run check_new_crawler every second
         self.start()
     
     def check_new_crawlers(self):
@@ -125,6 +128,9 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
     def _update_project_status(self, project_id, status):
         print('update project status...')
         print('project{} is {}'.format(project_id, status))
+        with self.app.app_context():
+            ProjectHandler().update_project_status(project_id, status)
+
 
 
 def start_spider_loop(queue):

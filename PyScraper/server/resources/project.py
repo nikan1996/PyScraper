@@ -10,7 +10,7 @@
 """
 from flask_restful import Resource, reqparse
 
-from PyScraper.server.resource_handlers.project_handler import ProjectHandler
+from PyScraper.server.resource_handlers.project_handler import ProjectHandler, ProjectActionHandler
 
 parser = reqparse.RequestParser()
 parser.add_argument('project_name', type=str, required=True, help='project_name is required')
@@ -57,4 +57,12 @@ class Project(Resource):
 class ProjectAction(Resource):
     def put(self, project_id):
         action_parser = reqparse.RequestParser()
-        parser.add_argument('action', type=str, required=True, help='project_name is required')
+        action_parser.add_argument('action', type=str, required=True, help='action is required')
+        args = action_parser.parse_args()
+        action = args.action
+        try:
+            result = ProjectActionHandler().put_item_into_spider_loop(project_id, action)
+            return result
+        except Exception as e:
+            return {"error": str(e)}, 403
+
