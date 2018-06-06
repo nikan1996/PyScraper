@@ -5,32 +5,6 @@
             <el-step title="步骤 2"></el-step>
             <el-step title="步骤 3"></el-step>
         </el-steps>
-        <!--<el-form-item label="活动区域" prop="region">-->
-        <!--<el-select v-model="projectForm.region" placeholder="请选择活动区域">-->
-        <!--<el-option label="区域一" value="shanghai"></el-option>-->
-        <!--<el-option label="区域二" value="beijing"></el-option>-->
-        <!--</el-select>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="活动性质" prop="type">-->
-        <!--<el-checkbox-group v-model="projectForm.type">-->
-        <!--<el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>-->
-        <!--<el-checkbox label="地推活动" name="type"></el-checkbox>-->
-        <!--<el-checkbox label="线下主题活动" name="type"></el-checkbox>-->
-        <!--<el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>-->
-        <!--</el-checkbox-group>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="特殊资源" prop="resource">-->
-        <!--<el-radio-group v-model="projectForm.resource">-->
-        <!--<el-radio label="线上品牌商赞助"></el-radio>-->
-        <!--<el-radio label="线下场地免费"></el-radio>-->
-        <!--</el-radio-group>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item label="活动形式" prop="desc">-->
-        <!--<el-input type="textarea" v-model="projectForm.desc"></el-input>-->
-        <!--</el-form-item>-->
-        <!--<el-form-item>-->
-        <!--<el-button type="primary" @click="submitForm('projectForm')">立即创建</el-button>-->
-        <!--</el-form-item>-->
         <div v-if="active==0">
             <el-button type="success" @click="next_exist_script">选择已有脚本</el-button>
             <el-button type="primary" @click="next_non_exist_script">新建脚本</el-button>
@@ -71,7 +45,7 @@
                     <el-form-item label="标签" prop="tag">
                         <el-input v-model="projectForm.tag"></el-input>
                     </el-form-item>
-                    <el-button style="margin-top: 12px;" @click="next">下一步</el-button>
+                    <el-button style="margin-top: 12px;" @click="next_step">下一步</el-button>
                 </el-form>
             </template>
             <template v-else>
@@ -131,21 +105,12 @@
 </template>
 <script>
     import axios from "axios";
-    import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
 
     export default {
-        components: {ElButton},
         name: 'New_project',
         created() {
             this.get_spiders();
             this.get_databases();
-        },
-        model: {
-            prop: 'database_id',
-            event: 'change'
-        },
-        props: {
-            database_id: String,
         },
         data() {
             return {
@@ -207,7 +172,7 @@
                     tag: "",
                     cron_config: this.projectForm.cron_config,
                 };
-                console.log(form)
+                console.log(form);
                 return form;
             }
 

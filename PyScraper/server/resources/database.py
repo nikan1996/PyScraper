@@ -25,7 +25,6 @@ class Databases(Resource):
         return result
     
     def put(self):
-        print(1)
         # create a new project
         args = parser.parse_args()
         database_name = args.database_name

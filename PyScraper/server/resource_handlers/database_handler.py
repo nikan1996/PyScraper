@@ -44,10 +44,8 @@ class DatabaseHandler:
     def delete_database(self, database_id):
         database = Database.query.filter_by(database_id=database_id).first()
         if database:
-            database.is_deleted = 1
+            database.is_deleted = True
         db.session.commit()
-        print(database.is_deleted)
-        print('is deleted')
         print(convert_query_result2dict(database))
         return convert_query_result2dict(database)
     

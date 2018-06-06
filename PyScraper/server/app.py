@@ -22,8 +22,9 @@ from sqlalchemy_utils import database_exists, create_database
 from PyScraper.server.extensions import db, spidercls_queue
 from PyScraper.server.resources.database import Databases, Database
 from PyScraper.server.resources.project import Projects, Project, ProjectAction
+from PyScraper.server.resources.result import Result
 from PyScraper.server.resources.spider import Spiders
-
+from PyScraper.server.resources.task import Task
 from PyScraper.utils import run_in_thread
 
 logger = logging.getLogger(__name__)
@@ -85,6 +86,9 @@ def configure_api(app):
     api.add_resource(Projects, '/projects')
     api.add_resource(Project, '/project/<int:project_id>')
     api.add_resource(ProjectAction, '/project_action/<int:project_id>')
+    api.add_resource(Task, '/task/<int:project_id>')
+    api.add_resource(Result, '/result/<int:project_id>')
+    
     api.add_resource(Databases, '/databases')
     api.add_resource(Database, '/database/<int:database_id>')
     

@@ -171,3 +171,13 @@ def test_project_api(client):
     response = client.get('/project/{}'.format(project_id))
     assert response.status_code == 200
     assert dictify(response) is None
+
+def test_task_api(client):
+    # get the list of tasks
+    response = client.get('/task/1?limit=10&page=1')
+    assert response.status_code == 200
+    
+def test_result_api(client):
+    # get the list of tasks
+    response = client.get('/result/1?limit=10&page=1')
+    assert response.status_code == 200

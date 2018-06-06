@@ -1,22 +1,27 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Index from './components/index.vue'
-import Project from './components/projects.vue'
+import Projects from './components/projects.vue'
 import Databases from './components/databases.vue'
 import New_project from './components/project/new_project.vue'
 import New_gov_project from './components/project/new_gov_project.vue'
+import Project from './components/project/project_detail.vue'
+
 Vue.use(VueRouter);
 
 
 // 定义路由
 const routes = [
     {
+        path: '/', redirect: '/index'
+    },
+    {
         path: '/index',
         component: Index,
     },
     {
         path: '/projects',
-        component: Project,
+        component: Projects,
     },
     {
         path: '/project/:project_id',

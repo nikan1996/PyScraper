@@ -23,6 +23,7 @@ class ProjectHandler:
         project = Project(project_name=project_name, setting=setting, cron_config=cron_config, tag=tag)
         db.session.add(project)
         db.session.commit()
+
         return convert_query_result2dict(project)
     
     def get_project(self, project_id):
@@ -32,7 +33,7 @@ class ProjectHandler:
         project = Project.query.filter_by(project_id=project_id, is_deleted=0).first()
         if project:
             project.is_deleted = 1
-            db.session.commit()
+        db.session.commit()
         return convert_query_result2dict(project)
     
     def update_project(self, *, project_id, project_name, setting, cron_config, tag):
@@ -43,7 +44,6 @@ class ProjectHandler:
         project.setting = setting
         project.cron_config = cron_config
         project.tag = tag
-        db.session.add(project)
         db.session.commit()
         return convert_query_result2dict(project)
     
@@ -75,4 +75,5 @@ class ProjectActionHandler:
         item = {'action': action, 'spidercls': spidercls, 'project_id': project_id}
         spidercls_queue.put(item)
         project.status = action
+        db.session.commit()
         return item

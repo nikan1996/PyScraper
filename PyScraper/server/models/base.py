@@ -11,7 +11,7 @@
 import json
 
 from flask_sqlalchemy import Model as ModelBase
-from sqlalchemy import TypeDecorator
+from sqlalchemy import TypeDecorator, func
 from sqlalchemy.dialects import mysql
 from datetime import datetime
 
@@ -42,6 +42,7 @@ class JsonEncodedDict(TypeDecorator):
 
 
 def convert_query_result2dict(query_result):
+    # convert to dict or list of dict
     if query_result is None:
         return query_result
     if isinstance(query_result, list):
@@ -52,3 +53,9 @@ def convert_query_result2dict(query_result):
     else:
         return query_result.as_dict()
     
+
+def get_count(q):
+    # q:q = session.query(TestModel).filter(...).order_by(...)
+    count_q = q.statement.with_only_columns([func.count()]).order_by(None)
+    count = q.session.execute(count_q).scalar()
+    return count

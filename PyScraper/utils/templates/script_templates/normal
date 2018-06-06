@@ -5,7 +5,7 @@ from scrapy.crawler import CrawlerProcess
 from scrapy.http import TextResponse
 
 
-class ${classname}Item(scrapy.Item):
+class $classnameItem(scrapy.Item):
     # define the fields for your item here like:
     # name = scrapy.Field()
     pass

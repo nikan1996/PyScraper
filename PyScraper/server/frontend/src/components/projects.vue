@@ -23,8 +23,8 @@
                         label="操作"
                         width="400">
                     <template slot-scope="scope">
-                        <el-button @click="see(scope.row)" type="primary" size="small">查看</el-button>
-                        <el-button type="primary" size="small" @click="see(scope.row)">编辑</el-button>
+                        <el-button type="primary" size="small" @click="see(scope.row)">查看</el-button>
+                        <el-button type="primary" size="small" @click="edit(scope.row)">编辑</el-button>
                         <el-button type="primary" size="small" @click="start(scope.row)"
                                    :disabled="scope.row.status == '运行'"
                         >开始
@@ -106,6 +106,7 @@
                 });
             },
             see(row) {
+                this.$router.push({path: '/project/' + row.project_id});
                 console.log(row);
             },
             start(row) {

@@ -25,7 +25,7 @@ DEFAULT_REQUEST_HEADERS = {
 DEPTH_LIMIT = 0  # no limitation to depth , set positive integer for depth level.
 PROXY_ENABLED = False
 
-CONCURRENT_REQUESTS = 16
+CONCURRENT_REQUESTS = 100
 CONCURRENT_ITEMS = 100
 
 COOKIES_ENABLED = False
@@ -37,6 +37,16 @@ CHROMIUM_URL = '127.0.0.1:9000'
 TELNETCONSOLE_ENABLED = False
 SPIDER_SCRIPT_MODULE = 'effective_spiders'
 MAIL_TEMPLATES_PATH = abspath(join(dirname(__file__), 'utils', 'templates', 'mail_templates.html'))
+
+
+mail_settings = {
+    'smtphost': 'smtp.qq.com',
+    'mailfrom': '859905874@qq.com',
+    'smtpport': 465,
+    'smtpssl': True,
+    'smtpuser': '859905874@qq.com',
+    'smtppass': 'cgcxzdatxduybbhh',
+}
 # See also autothrottle settings and docs
 # DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:

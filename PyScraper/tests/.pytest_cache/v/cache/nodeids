@@ -1,4 +1,3 @@
 [
-  "test_client.py::test_database_api",
-  "test_client.py::test_project_api"
+  "test_result_handler.py::test_task_handler"
 ]

@@ -29,11 +29,17 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
         self.queue = queue
         self.spiderclses = {}  # {'cls1':{'spidercls':'cls1','crawler': crawler, 'status': 'start', 'project_id': 1}}
         super(ScalableCrawlerProcess, self).__init__(in_thread, *args, **kwargs)
+        
+        self.t = None
     
     def start_loop(self):
-        t = task.LoopingCall(self.check_new_crawlers)
-        t.start(0.5)  # run check_new_crawler every second
+        self.t = task.LoopingCall(self.check_new_crawlers)
+        self.t.start(0.5).addErrback(self.restart_loop)  # run check_new_crawler every second
         self.start()
+    
+    def restart_loop(self, failure):
+        logger.error(str(failure))
+        self.t.start(0.5).addErrback(self.restart_loop)
     
     def check_new_crawlers(self):
         try:
@@ -45,7 +51,7 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
             if not spidercls:
                 logger.error("no spidercls in queue item")
                 raise Exception("no spidercls in queue item")
-
+            
             spidercls_info = self.get_spidercls_info(spidercls)
             status = spidercls_info.get('status')
             if action == status:
@@ -72,7 +78,7 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
                 self.update_spidercls_status(spidercls, action)
         
         except Empty:
-            print("now spidercls queue is empty")
+            logger.info("now spidercls queue is empty")
     
     def pause_a_crawler(self, *, spidercls_info: dict):
         crawler: Crawler = spidercls_info.get('crawler')
@@ -106,15 +112,25 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
         
         return d.addBoth(_done)
     
-    def crawl(self, crawler_or_spidercls, spidercls=None,project_id=None, *args, **kwargs):
-        crawler = self.create_crawler(crawler_or_spidercls)
-        self.spiderclses[spidercls] = {'crawler': crawler,
-                                                  'status': 'start', 'project_id': project_id}
-        print('start crawl {}'.format(self.spiderclses[spidercls]))
-        return self._crawl(crawler, *args, crawler_or_spidercls=crawler_or_spidercls, spidercls=spidercls,**kwargs)
+    def crawl(self, crawler_or_spidercls, spidercls=None, project_id=None, *args, **kwargs):
+        self.spiderclses[spidercls] = {'crawler': None,
+                                       'status': 'start', 'project_id': project_id}
+        crawler = self.create_crawler2(spidercls_cls=crawler_or_spidercls, spidercls_str=spidercls)
+        self.spiderclses[spidercls]['crawler'] = crawler
+        logger.info('start crawl {}'.format(self.spiderclses[spidercls]))
+        return self._crawl(crawler, *args, crawler_or_spidercls=crawler_or_spidercls, spidercls=spidercls, **kwargs)
+    
+    def create_crawler2(self, spidercls_cls, spidercls_str):
+        cls_settings = self.settings.copy()
+        spidercls_info = self.get_spidercls_info(spidercls_str)
+        extra_info = {'project_id': spidercls_info.get('project_id')}
+        cls_settings.setdict(extra_info)
+        logger.info(cls_settings)
+        return Crawler(spidercls_cls, cls_settings)
     
     def crawler_stop(self, spidercls):
         self.update_spidercls_status(spidercls, 'stop')
+        logger.info('crawler {} stop'.format(spidercls))
     
     def get_spidercls_info(self, spidercls: str):
         return self.spiderclses.get(spidercls, {})
@@ -132,12 +148,17 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
             ProjectHandler().update_project_status(project_id, status)
 
 
-
 def start_spider_loop(queue):
     # TODO: 填入 project级配置{....}
     settings = {
-        "REACTOR_THREADPOOL_MAXSIZE": 30,  # 设置reactor 线程池最大数量
-        "TELNETCONSOLE_ENABLED": False,
+        'REACTOR_THREADPOOL_MAXSIZE': 30,  # 设置reactor 线程池最大数量
+        'TELNETCONSOLE_ENABLED': False,
+        'DOWNLOADER_MIDDLEWARES': {
+            'PyScraper.middlewares.downloadmiddlewares.put_task_middleware.TaskMiddleware': 999,
+        },
+        'ITEM_PIPELINES': {
+            'PyScraper.pipelines.result_pipeline.ResultPipeline': 999
+        }
     }
     process = ScalableCrawlerProcess(queue, settings=settings)
     #

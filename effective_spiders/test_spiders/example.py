@@ -34,20 +34,22 @@ class ExampleSpider(scrapy.Spider):
             yield scrapy.Request(url, callback=self.parse)
     
     def parse(self, response: TextResponse):
-        pass
+        yield {'test': 'haha'}
 
 
 class BlockExampleSpider(ExampleSpider):
     name = 'block_example'
     custom_settings = {
-        'DOWNLOAD_DELAY': 2,
-        'CONCURRENT_REQUESTS': 1
+        # 'DOWNLOAD_DELAY': 2,
+        # 'CONCURRENT_REQUESTS': 1
     }
     
     def parse(self, response: TextResponse):
+        yield {'test': 'haha'}
         print("example will hang 60 second ")
         for i in range(30):
             yield scrapy.Request("http://example.com/", callback=self.parse, dont_filter=True)
+
         print("example was stopped now")
 
 
