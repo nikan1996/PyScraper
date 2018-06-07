@@ -9,15 +9,22 @@
 @time: 22/01/2018 2:59 PM
 """
 import importlib
+import importlib.util
 import inspect
 import logging
 import pkgutil
 import sys
 import time
 import traceback
+from datetime import datetime
 from importlib import import_module
+from os.path import join
+from urllib.parse import urlparse
 
+from jinja2 import Template
 from scrapy import Spider
+
+from PyScraper.settings import SCRIPT_TEMPLATES_DIR, GOV_SPIDER_DIR, GOV_SPIDER_MODULE
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +63,7 @@ def get_all_submodules(*, root_module_name):
     mod_names = []
     mod = import_module(root_module_name)
     sys.modules[root_module_name] = mod
-
+    
     for loader, module_name, is_pkg in pkgutil.walk_packages(mod.__path__, onerror=lambda x: print(x)):
         try:
             sub_module_name = module_name
@@ -72,6 +79,7 @@ def get_all_submodules(*, root_module_name):
     print('load_cost_time:', time.process_time() - start)
     return mods, mod_names
 
+
 def walk_modules(path):
     """Loads a module and all its submodules from the given module path and
     returns them. If *any* module throws an exception while importing, that
@@ -79,7 +87,7 @@ def walk_modules(path):
 
     For example: walk_modules('scrapy.utils')
     """
-
+    
     mods = []
     mod = import_module(path)
     mods.append(mod)
@@ -93,6 +101,7 @@ def walk_modules(path):
                 mods.append(submod)
     return mods
 
+
 def get_classes_from_submodules(submodules, class_type=None):
     """
     get classes from modules
@@ -105,7 +114,9 @@ def get_classes_from_submodules(submodules, class_type=None):
     for module in submodules:
         for name, obj in inspect.getmembers(module):
             if inspect.isclass(obj):
-                if not class_type or (class_type and issubclass(obj, class_type) and obj.__qualname__ != class_type.__qualname__):
+                if not class_type or (
+                                class_type and issubclass(obj,
+                                                          class_type) and obj.__qualname__ != class_type.__qualname__):
                     classes.append(obj)
     return classes
 
@@ -113,5 +124,41 @@ def get_classes_from_submodules(submodules, class_type=None):
 def load_spiders(*, submodules, class_type=Spider):
     return get_classes_from_submodules(submodules, class_type=class_type)
 
+
 def get_full_classname(klass):
     return klass.__module__ + "." + klass.__qualname__
+
+
+def create_script(*, script_name, rules, start_url, mail_to, script_type=None):
+    if script_type == 'gov':
+        return create_gov_script(script_name, rules, start_url, mail_to)
+
+
+def create_gov_script(spider_name, rules, start_url, mail_to):
+    """
+    to create a new government script
+    :param spider_name: the spider name
+    :param rules: the rules for government error correction
+    :param start_url: start url for spider
+    :param mail_to: mail receiver when rule error occurs
+    :return: new government script path
+    """
+    if not spider_name or not rules or not start_url or not mail_to:
+        raise Exception("parameters should not be None")
+    wildcard_mapping = {'*': '[\s\S]{1}'}
+    new_rules = ["('{}', '{}'),".format(rule[0].replace('*', wildcard_mapping['*']), rule[1]) for rule in rules]
+    allowed_domain = urlparse(start_url).netloc
+    timestamp = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    
+    with open(SCRIPT_TEMPLATES_DIR + '/gov_template', 'r') as f:
+        script_template = Template(f.read())
+    result = script_template.render(spider_name=spider_name, rules=new_rules, start_url=start_url,
+                                    allowed_domain=allowed_domain,
+                                    mail_to=mail_to, datetime=timestamp)
+    today = str(datetime.today().date())
+    path = join(GOV_SPIDER_DIR, today + "_{spider_name}.py".format(spider_name=spider_name))
+    with open(path, 'w+') as f:
+        f.write(result)
+    spider_modulename = GOV_SPIDER_MODULE + ".{today}_{spider_name}.{spider_name}Spider".format(today=today,
+                                                                                                spider_name=spider_name)
+    return spider_modulename

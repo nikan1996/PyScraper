@@ -30,6 +30,8 @@ class Projects(Resource):
         setting = args.setting
         cron_config = args.cron_config
         tag = args.tag
+        if not setting.get('spidercls') and not setting.get('spider_name'):
+            return {"error": "please provide spidercls or spider_name"}
         result = ProjectHandler().create_project(project_name=project_name, setting=setting, cron_config=cron_config, tag=tag)
         return result
 

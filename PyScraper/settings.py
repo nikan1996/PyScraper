@@ -10,6 +10,8 @@
 """
 # Obey robots.txt rules
 from os.path import abspath, join, dirname
+import os
+SETTING_FILE_DIR = dirname(__file__)
 
 ROBOTSTXT_OBEY = False
 DOWNLOAD_HANDLERS = {
@@ -36,7 +38,12 @@ FEED_EXPORT_ENCODING = 'utf-8'
 CHROMIUM_URL = '127.0.0.1:9000'
 TELNETCONSOLE_ENABLED = False
 SPIDER_SCRIPT_MODULE = 'effective_spiders'
-MAIL_TEMPLATES_PATH = abspath(join(dirname(__file__), 'utils', 'templates', 'mail_templates.html'))
+GOV_SPIDER_DIR = join(os.path.abspath(os.path.join(SETTING_FILE_DIR, os.pardir)), 'effective_spiders', 'gov_spiders')
+GOV_SPIDER_MODULE = 'effective_spiders.gov_spiders'
+TEMPLATES_DIR = join(dirname(__file__), 'utils', 'templates')
+SCRIPT_TEMPLATES_DIR = TEMPLATES_DIR + '/script_templates'
+MAIL_TEMPLATES_PATH = TEMPLATES_DIR + '/mail_templates.html'
+
 
 
 mail_settings = {

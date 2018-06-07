@@ -12,6 +12,7 @@ from PyScraper.server.extensions import db
 from PyScraper.server.extensions import spidercls_queue
 from PyScraper.server.models.base import convert_query_result2dict
 from PyScraper.server.models.project import Project
+from PyScraper.utils import create_script
 
 
 class ProjectHandler:
@@ -20,10 +21,18 @@ class ProjectHandler:
         return convert_query_result2dict(all)
     
     def create_project(self, *, project_name, setting, cron_config, tag):
+        if not setting.get('spidercls'):
+            spider_name = setting.get('spider_name')
+            rules = setting.get('rules')
+            start_url = setting.get('start_url')
+            mail_to = setting.get('information_config').get('email')
+            script_type = setting.get('script_type')
+            spidercls = create_script(script_name=spider_name, rules=rules, start_url=start_url, mail_to=mail_to,
+                                      script_type=script_type)
+            setting['spidercls'] = spidercls
         project = Project(project_name=project_name, setting=setting, cron_config=cron_config, tag=tag)
         db.session.add(project)
         db.session.commit()
-
         return convert_query_result2dict(project)
     
     def get_project(self, project_id):
@@ -53,7 +62,6 @@ class ProjectHandler:
             project.status = status
             db.session.commit()
         return convert_query_result2dict(project)
-    
 
 
 class ProjectActionHandler:
