@@ -7,7 +7,9 @@
                           stripe
                           style="width: 100%;"
                 >
-                    <el-table-column prop="url" label="爬取链接" width="600">
+                    <el-table-column label="爬取链接" width="600">
+                                                <a>{{url}}</a>
+
                     </el-table-column>
                     <el-table-column prop="status_code" label="响应状态码">
                     </el-table-column>

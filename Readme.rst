@@ -12,3 +12,11 @@ PyScraper is devloped for Python3.6 or later.
 
 TODO:
 1. 补充ProjectHandler及其接口的测试
+
+
+
+Changelog:
+v1.0
+2018-06-08
+### FIXED:
+- 爬虫脚本更新时，界面能实时加载出最新爬虫模块目录。

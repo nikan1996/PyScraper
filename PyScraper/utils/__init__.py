@@ -8,8 +8,7 @@
 
 @time: 22/01/2018 2:59 PM
 """
-import importlib
-import importlib.util
+
 import inspect
 import logging
 import pkgutil
@@ -17,7 +16,8 @@ import sys
 import time
 import traceback
 from datetime import datetime
-from importlib import import_module
+
+from importlib import import_module, reload
 from os.path import join
 from urllib.parse import urlparse
 
@@ -41,7 +41,7 @@ def run_in_thread(func, *args, daemon=True, **kwargs):
 def import_class(cl):
     d = cl.rfind(".")
     classname = cl[d + 1:len(cl)]
-    module = importlib.import_module(cl[0:d])
+    module = import_module(cl[0:d])
     return getattr(module, classname)
 
 
@@ -90,6 +90,7 @@ def walk_modules(path):
     
     mods = []
     mod = import_module(path)
+    reload(mod)
     mods.append(mod)
     if hasattr(mod, '__path__'):
         for _, subpath, ispkg in pkgutil.iter_modules(mod.__path__):

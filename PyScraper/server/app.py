@@ -83,6 +83,14 @@ def configure_api(app):
     def health():
         return "ready to go!\n", 200
     
+    @app.route("/blank_page")
+    def blank():
+        return "", 200
+    
+    @app.route("/error_page")
+    def error():
+        return "", 404
+    
     api.add_resource(Projects, '/projects')
     api.add_resource(Project, '/project/<int:project_id>')
     api.add_resource(ProjectAction, '/project_action/<int:project_id>')
