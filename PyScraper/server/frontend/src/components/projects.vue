@@ -6,6 +6,9 @@
         <router-link to="/create_gov_project">
             <el-button type="primary">新建政府项目</el-button>
         </router-link>
+        <router-link to="/gov_lexicon">
+            <el-button type="primary">政府关键词库</el-button>
+        </router-link>
         <div v-cloak>
             <el-table :data="show_projects.slice((currentPage-1)*pagesize,currentPage*pagesize)" stripe
                       style="width: 100%"

@@ -8,7 +8,7 @@
                           style="width: 100%;"
                 >
                     <el-table-column label="爬取链接" width="600">
-                                                <a>{{url}}</a>
+<template slot-scope="scope"><a class="link" target="_blank" :href="scope.row.url">{{}}</a></template>
 
                     </el-table-column>
                     <el-table-column prop="status_code" label="响应状态码">
@@ -152,4 +152,7 @@
 </script>
 
 <style scoped>
+    .link{
+        text-decoration:none;
+    }
 </style>
