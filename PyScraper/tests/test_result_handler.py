@@ -17,7 +17,7 @@ from PyScraper.tests.test_client import app, less_equal
 placeholder = lambda: app  # only a placeholder to avoid pycharm import optimize
 
 
-def test_task_handler(app):
+def test_result_handler(app):
     with app.app_context():
         result_handler = ResultHandler()
         project_id = 1
@@ -36,6 +36,30 @@ def test_task_handler(app):
         result = result_handler.get(project_id=project_id)
         assert result['count'] == 10
         assert result['total_count'] == 20
+        print(result['result'])
+        for r in result['result']:
+            assert less_equal(r, _dict)
+
+
+def test_increment_result(app):
+    with app.app_context():
+        result_handler = ResultHandler()
+        project_id = 1
+        result = {
+            'title': '今天天气好',
+            'content': '今日2018年6月6日，花正开哟'
+        }
+        _dict = {
+            'project_id': project_id,
+            'result': result,
+        }
+        for i in range(20):
+            time.sleep(0.15)
+            result_handler.put_result(project_id=project_id, result=result, increment=True)
+        
+        result = result_handler.get(project_id=project_id)
+        assert result['count'] == 1
+        assert result['total_count'] == 1
         print(result['result'])
         for r in result['result']:
             assert less_equal(r, _dict)

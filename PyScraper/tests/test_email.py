@@ -12,7 +12,7 @@ import pytest
 import pytest_twisted
 from scrapy.mail import MailSender
 
-from PyScraper.utils.mail import render_mail
+from PyScraper.utils.mail import render_error_correction_result_mail
 
 
 @pytest.fixture
@@ -25,13 +25,14 @@ def mailer():
 def rendered_html_table_email():
     render_dict = {
         'title': '（PyScraper发送）错误网站',
-        'table_head': ['正确词', '错误词', '网站地址'],
+        'url': 'http://www.w3school.com.cn/tags/tag_table.asp',
+        'table_head': ['正确词', '错误词'],
         'table_data': [
-            {'correct': '中华人民共和国', 'error': '中黑人民共和国', 'url': 'http://www.w3school.com.cn/tags/tag_table.asp'},
-            {'correct': '中华人民共和国', 'error': '中白人民共和国', 'url': 'http://www.w3school.com.cn/tags/tag_table.asp'},
-            {'correct': '中华人民共和国', 'error': '中黄人民共和国', 'url': 'http://www.w3school.com.cn/tags/tag_table.asp'},
+            {'correct': '中华人民共和国', 'error': '中黑人民共和国'},
+            {'correct': '中华人民共和国', 'error': '中黑人民共和国'},
+            {'correct': '中华人民共和国', 'error': '中黑人民共和国'},
         ]}
-    return render_mail(render_dict['title'], render_dict['table_head'], render_dict['table_data'])
+    return render_error_correction_result_mail(**render_dict)
 
 
 @pytest.mark.skip

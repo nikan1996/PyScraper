@@ -144,16 +144,16 @@ def create_gov_script(spider_name, rules, start_url, mail_to):
     :param mail_to: mail receiver when rule error occurs
     :return: new government script path
     """
-    if not spider_name or not rules or not start_url or not mail_to:
+    if not spider_name or not start_url or not mail_to:
         raise Exception("parameters should not be None")
-    wildcard_mapping = {'*': '[\s\S]{1}'}
-    new_rules = ["('{}', '{}'),".format(rule[0].replace('*', wildcard_mapping['*']), rule[1]) for rule in rules]
+    if not start_url.startswith("http"):
+        start_url = "http://" + start_url
     allowed_domain = urlparse(start_url).netloc
     timestamp = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     
     with open(SCRIPT_TEMPLATES_DIR + '/gov_template', 'r') as f:
         script_template = Template(f.read())
-    result = script_template.render(spider_name=spider_name, rules=new_rules, start_url=start_url,
+    result = script_template.render(spider_name=spider_name, rules=rules, start_url=start_url,
                                     allowed_domain=allowed_domain,
                                     mail_to=mail_to, datetime=timestamp)
     today = str(datetime.today().date())

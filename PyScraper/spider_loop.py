@@ -15,7 +15,7 @@ from scrapy.core.engine import ExecutionEngine
 from scrapy.crawler import Crawler
 from twisted.internet import task
 
-from PyScraper.server.app import create_app
+from PyScraper.server.app import create_app_forcontext
 from PyScraper.server.resource_handlers.project_handler import ProjectHandler
 from PyScraper.utils import import_class
 from PyScraper.utils.crawl_process import PyScraperCrawlerProcess
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 class ScalableCrawlerProcess(PyScraperCrawlerProcess):
     def __init__(self, queue, in_thread=True, *args, **kwargs):
-        self.app = create_app(spider_loop=False)
+        self.app = create_app_forcontext()
         self.queue = queue
         self.spiderclses = {}  # {'cls1':{'spidercls':'cls1','crawler': crawler, 'status': 'start', 'project_id': 1}}
         super(ScalableCrawlerProcess, self).__init__(in_thread, *args, **kwargs)
@@ -78,7 +78,8 @@ class ScalableCrawlerProcess(PyScraperCrawlerProcess):
                 self.update_spidercls_status(spidercls, action)
         
         except Empty:
-            logger.info("now spidercls queue is empty")
+            pass
+            # logger.info("now spidercls queue is empty")
     
     def pause_a_crawler(self, *, spidercls_info: dict):
         crawler: Crawler = spidercls_info.get('crawler')

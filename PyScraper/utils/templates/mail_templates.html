@@ -5,6 +5,9 @@
 </head>
 <body>
 <table border="1">
+    <th colspan="42">
+        {{url}}
+    </th>
     <tr>
         {% for item in table_head %}
         <th>{{ item }}</th>
@@ -14,7 +17,6 @@
     <tr>
         <td>{{data.correct}}</td>
         <td>{{data.error}}</td>
-        <td><a href={{data.url}}>{{data.url}}</a></td>
     </tr>
     {% endfor %}
 

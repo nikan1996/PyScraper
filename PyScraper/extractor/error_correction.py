@@ -13,15 +13,22 @@ from typing import List, Pattern, Tuple
 
 from scrapy.http import TextResponse
 
+from PyScraper.server.app import create_app_forcontext
+from PyScraper.server.resource_handlers.gov_lexicon_handler import GovLexiconHandler
+
 
 class ErrorCorrectionExtractor:
     """
     政府网站纠错解析器
     """
+    wildcard_mapping = {'*': '[\s\S]{1}'}
     
-    def __init__(self, pairs: List[Tuple[str, str]]):
+    def __init__(self, pairs: List[Tuple[str, str]], domain: str):
         pairs = self.to_safe(pairs)
-        self.compiled_pairs: List[Tuple[Pattern, str]] = self.compile_pairs(pairs)
+        
+        global_pairs = self.to_safe(self.get_global_pairs(domain=domain))
+        self.compiled_pairs: List[Tuple[Pattern, str]] = self.compile_pairs(pairs + global_pairs)
+        
         self.has_error_urls = set()
     
     def find_error(self, response: TextResponse):
@@ -42,7 +49,16 @@ class ErrorCorrectionExtractor:
         return [pair for pair in pairs if all(pair)]
     
     @staticmethod
-    def compile_pairs(pairs: List[Tuple[str, str]]):
+    def get_global_pairs(domain: str):
+        app = create_app_forcontext()
+        with app.app_context():
+            return GovLexiconHandler().get_all_rules_by_domain(domain)
+    
+    def convert_pairs(self, pairs: List[Tuple[str, str]]):
+        return [(rule[0].replace('*', self.wildcard_mapping['*']), rule[1]) for rule in pairs]
+    
+    def compile_pairs(self, pairs: List[Tuple[str, str]]):
+        pairs = self.convert_pairs(pairs)
         """
         pair eg.[("关于下达温州市201([\s\S]{1})年公益性科技计划项目", "关于下达温州市2017年公益性科技计划项目")]
         :return:

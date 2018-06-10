@@ -11,8 +11,8 @@ PyScraper is devloped for Python3.6 or later.
 
 
 TODO:
-1. 补充ProjectHandler及其接口的测试
-
+1. 补充ProjectHandler及其接口的测试。
+2. 区分增量表和全量表 2种表格。
 
 
 Changelog:

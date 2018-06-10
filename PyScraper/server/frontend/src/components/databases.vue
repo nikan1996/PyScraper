@@ -16,8 +16,8 @@
                             width="300">
                         <template slot-scope="scope">
                             <el-button type="primary" @click="handleClick(scope.row)" size="small">查看</el-button>
-                            <el-button type="primary"  size="small">编辑</el-button>
-                            <el-button type="primary"  size="small">删除</el-button>
+                            <el-button type="primary" size="small">编辑</el-button>
+                            <el-button type="primary" size="small">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -151,9 +151,6 @@
             total: function () {
                 return this.db_data.length
             },
-            show_data: function () {
-                return this.db_data
-            },
 
         },
         methods: {
@@ -226,7 +223,8 @@
     #database {
         /*overflow:auto;*/
     }
-    #dbtable{
+
+    #dbtable {
         /*position: relative;*/
         /*min-height: 600px;*/
         /*top: 0;*/
@@ -234,6 +232,7 @@
         /*right: 0;*/
         /*bottom: 0;*/
     }
+
     /*#letPaginationBottom{*/
     /*min-height: 200px;*/
     /*overflow:auto;*/

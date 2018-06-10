@@ -13,8 +13,6 @@
             <el-table :data="show_projects.slice((currentPage-1)*pagesize,currentPage*pagesize)" stripe
                       style="width: 100%"
                       :default-sort="{prop: 'update_timestamp', order: 'descending'}">
-                <el-table-column prop="project_id" label="id">
-                </el-table-column>
                 <el-table-column prop="'tag" label="标签" width="180">
                 </el-table-column>
                 <el-table-column prop="project_name" label="项目名称" width="180">

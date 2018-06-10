@@ -11,10 +11,11 @@ import Gov_lexicon from './components/gov_lexicon.vue'
 Vue.use(VueRouter);
 
 
-// 定义路由
+// 定义前端路由
 const routes = [
     {
-        path: '/', redirect: '/index'
+        path: '/',
+        redirect: '/index',
     },
     {
         path: '/index',
@@ -48,7 +49,6 @@ const routes = [
         path: '/gov_lexicon',
         component: Gov_lexicon
     }
-
 ];
 
 // 创建 router 实例，然后传 `routes` 配置

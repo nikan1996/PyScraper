@@ -12,6 +12,7 @@
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.http import TextResponse
+from scrapy.spidermiddlewares.httperror import HttpError
 
 
 class ExampleItem(scrapy.Item):
@@ -27,10 +28,18 @@ class ExampleErrorSpider(scrapy.Spider):
     def start_requests(self):
         start_urls = ['http://www.example.com/error']
         for url in start_urls:
-            yield scrapy.Request(url, callback=self.parse)
+            yield scrapy.Request(url, callback=self.parse, errback=self.error_parse)
     
     def parse(self, response: TextResponse):
         yield {'test': 'haha'}
+        
+    def error_parse(self, failure):
+        if isinstance(failure.value, HttpError):
+            response = failure.value.response
+            print(response.url)
+            print(response.status)
+        print(failure.__dict__)
+        print(failure)
 
 
 if __name__ == '__main__':

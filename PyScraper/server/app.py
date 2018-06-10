@@ -21,6 +21,7 @@ from sqlalchemy_utils import database_exists, create_database
 
 from PyScraper.server.extensions import db, spidercls_queue
 from PyScraper.server.resources.database import Databases, Database
+from PyScraper.server.resources.gov_lexicon import GovLexicon, GovRule
 from PyScraper.server.resources.project import Projects, Project, ProjectAction
 from PyScraper.server.resources.result import Result
 from PyScraper.server.resources.spider import Spiders
@@ -30,15 +31,24 @@ from PyScraper.utils import run_in_thread
 logger = logging.getLogger(__name__)
 
 
-def create_app(config='PyScraper.config.Config', spider_loop=True):
+def create_app_forcontext(config='PyScraper.config.Config'):
+    tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
+    app = Flask("PyScraper", template_folder=tmpl_dir)
+    app.config.from_object(config)
+    init_db(app)
+
+    init_app_callbacks(app)
+    return app
+
+
+def create_app(config='PyScraper.config.Config'):
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
     app = Flask("PyScraper", template_folder=tmpl_dir)
     app.config.from_object(config)
     configure_logging(app)
     configure_api(app)
     init_db(app)
-    if spider_loop:
-        init_spider_loop(spidercls_queue)
+    init_spider_loop(spidercls_queue)
     init_app_callbacks(app)
     
     return app
@@ -55,8 +65,10 @@ def init_db(app):
     with app.app_context():
         from PyScraper.server.models.database import Database
         from PyScraper.server.models.project import Project
+        from PyScraper.server.models.lexicon import GovLexicon
         logger.info(Database)
         logger.info(Project)
+        logger.info(GovLexicon)
         db.create_all()
         logger.info('Create all tables!')
 
@@ -101,7 +113,9 @@ def configure_api(app):
     api.add_resource(Database, '/database/<int:database_id>')
     
     api.add_resource(Spiders, '/spiders')
-
+    
+    api.add_resource(GovLexicon, '/gov_lexicon')
+    api.add_resource(GovRule, '/gov_lexicon/<int:rule_id>')
 
 def configure_logging(app):
     config_file = '{project_path}/logger.json'

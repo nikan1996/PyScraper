@@ -33,36 +33,35 @@
         </template>
         <template v-if="active==2">
             <p align="center"><b>纠错规则配置(*号代表模糊匹配的字)</b></p>
-                            <el-tag type="info">例子：温*市和温州市</el-tag>
-            <el-form :inline="true" :model="gov_projectForm" :rules="rules" labelWidth="100px"
-                     v-for="rule of gov_projectForm.setting.rules">
-                <el-form-item label="错误词" :rules="{
+            <el-tag type="info">例子：温*市和温州市</el-tag>
+            <el-form :inline="true" :model="gov_projectForm" ref="gov_projectForm2" labelWidth="100px">
+                <div v-for="(rule, index) in gov_projectForm.setting.rules">
+                    <el-form-item label="匹配词" :rules="{
       required: true, message: '值不能为空', trigger: 'blur'
-    }" prop="rule[0]">
-                    <el-input v-model="rule[0]"></el-input>
-                </el-form-item>
-                <el-form-item label="正确词" :rules="{
+    }" :prop="'setting.rules.' + index + '.0'">
+                        <el-input v-model="rule[0]"></el-input>
+                    </el-form-item>
+                    <el-form-item label="正确词" :rules="{
       required: true, message: '值不能为空', trigger: 'blur'
-    }" prop="rule[1]">
-                    <el-input v-model="rule[1]"></el-input>
-                </el-form-item>
-
-                <el-button @click.prevent="removeRule(rule)">删除</el-button>
+    }" :prop="'setting.rules.' + index + '.1'">
+                        <el-input v-model="rule[1]"></el-input>
+                    </el-form-item>
+                    <el-button @click.prevent="removeRule(rule)">删除</el-button>
+                </div>
 
             </el-form>
-            <el-form :model="gov_projectForm" :rules="rules" ref="gov_projectForm" labelWidth="100px">
+            <el-form>
                 <el-form-item>
                     <el-button @click="addRule">新增规则</el-button>
-                                    </el-form-item>
-                                  <el-form-item>
+                </el-form-item>
+                <el-form-item>
                     <el-button style="margin-top: 12px;" @click="last">上一步</el-button>
 
-                    <el-button type="primary" style="margin-top: 12px;" @click="submitForm('gov_projectForm')">立即创建
+                    <el-button type="primary" style="margin-top: 12px;" @click="submitForm('gov_projectForm2')">立即创建
                     </el-button>
 
                     <!--<el-button @click="resetForm('gov_projectForm')">重置</el-button>-->
                 </el-form-item>
-
             </el-form>
         </template>
     </div>
@@ -76,6 +75,7 @@
         name: 'New_gov_project',
         data() {
             return {
+
                 active: 1,
                 gov_projectForm: {
                     project_name: "",
@@ -87,7 +87,7 @@
                         proxy_enabled: false,
                         spider_name: "",
                         spidercls: "",
-                        rules: [[]],
+                        rules: [],
                         database_config: {},
                         script_type: "gov",
                     },
@@ -99,7 +99,9 @@
                     setting: {
                         spider_name: {required: true, message: '请输入爬虫脚本名称', trigger: 'blur'},
 
-                        start_url: {required: true, message: '请输入起始URL', trigger: 'blur'},
+                        start_url: [{required: true, message: '请输入起始网址', trigger: 'blur'},
+                            { type: 'url', message: '网址需要以http开头'}
+                        ],
                         information_config: {
                             email: {required: true, message: '请输入邮箱', trigger: 'blur'}
                         }

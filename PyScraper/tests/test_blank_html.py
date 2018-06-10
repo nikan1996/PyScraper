@@ -8,8 +8,9 @@
 
 @time: 2018/6/8 下午6:12
 """
-from PyScraper.extractor.blank_html import BlankHtmlExtractor
+from scrapy.http import TextResponse
 
+from PyScraper.extractor.blank_html import BlankHtmlExtractor
 
 def test_blank_html_1():
     html = """<!DOCTYPE html>
@@ -23,7 +24,7 @@ def test_blank_html_1():
 </body>
 </html>"""
     ble = BlankHtmlExtractor()
-    ble.is_blank()
+    assert ble.is_blank(html) is True
     
     
 def test_blank_html_2():

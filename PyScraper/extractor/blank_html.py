@@ -8,13 +8,19 @@
 
 @time: 2018/6/8 下午4:32
 """
-from scrapy.http import TextResponse
+from scrapy.http import TextResponse, Response
+from bs4 import BeautifulSoup
 
 
 class BlankHtmlExtractor:
-    def __init__(self):
-        pass
-    
-    def is_blank(self, response: TextResponse):
-        pass
-        
+    def is_blank(self, response: TextResponse or str):
+        if isinstance(response, str):
+            content = response
+        elif isinstance(response, TextResponse):
+            content = response.text
+        else:
+            raise Exception("response need be string or TextResponse")
+        soup = BeautifulSoup(content, 'lxml')
+        if soup.body.text.strip():
+            return False
+        return True

@@ -4,9 +4,9 @@
 
 @author:nikan
 
-@file: wzskjj.py
+@file: test_wzskjj2.py
 
-@time: 2018-06-07 15:03:15
+@time: 2018-06-10 01:21:43
 """
 from typing import List
 
@@ -23,16 +23,14 @@ from PyScraper.extractor.xml_link import DataProxyXmlLinkExtractor
 from PyScraper.utils.mail import render_error_correction_result_mail
 
 
-class wzskjjSpider(Spider):
-    name = 'wzskjj'
+class test_wzskjj2Spider(Spider):
+    name = 'test_wzskjj2'
     allowed_domains = ['wzkj.wenzhou.gov.cn']
     start_urls = ['http://wzkj.wenzhou.gov.cn/']
     rules = [
-    ('温[\s\S]{1}市', '温州市'),
-    ('瑞[\s\S]{1}科技', '瑞）科技'),
     ]
     htmk_link_extractor = HtmlLinkExtractor()
-    error_correction_extractor = ErrorCorrectionExtractor(rules)
+    error_correction_extractor = ErrorCorrectionExtractor(rules, domain='wzkj.wenzhou.gov.cn')
     mailer = MailSender(smtphost='smtp.qq.com', mailfrom='859905874@qq.com', smtpport=465,
                         smtpssl=True, smtpuser='859905874@qq.com', smtppass='cgcxzdatxduybbhh')
     custom_settings = {
@@ -72,5 +70,5 @@ if __name__ == '__main__':
         # "LOG_FILE": "./wzkjj.log"
     }
     process = CrawlerProcess(settings=settings)
-    process.crawl(wzskjjSpider)
+    process.crawl(test_wzskjj2Spider)
     process.start()

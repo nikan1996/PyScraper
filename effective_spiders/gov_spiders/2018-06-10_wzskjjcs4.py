@@ -4,9 +4,9 @@
 
 @author:nikan
 
-@file: test_create_gov_script.py
+@file: wzskjjcs4.py
 
-@time: 2018-06-07 03:45:51
+@time: 2018-06-10 21:00:32
 """
 from typing import List
 
@@ -25,27 +25,26 @@ from PyScraper.extractor.xml_link import DataProxyXmlLinkExtractor
 from PyScraper.utils.mail import render_error_correction_result_mail
 
 
-class test_create_gov_scriptSpider(Spider):
-    name = 'test_create_gov_script'
-    allowed_domains = ['wzkj.wenzhou.gov.cn']
+class wzskjjcs4Spider(Spider):
+    name = 'wzskjjcs4'
+    allowed_domains = ['']
     start_urls = ['http://wzkj.wenzhou.gov.cn/']
     rules = [
-        ('关于下达温州市201[\s\S]{1}年公益性科技计划项目', '关于下达温州市2017年公益性科技计划项目'),
     ]
     htmk_link_extractor = HtmlLinkExtractor()
-    error_correction_extractor = ErrorCorrectionExtractor(rules, domain='wzkj.wenzhou.gov.cn')
+    error_correction_extractor = ErrorCorrectionExtractor(rules, domain='')
     blank_html_extractor = BlankHtmlExtractor()
     mailer = MailSender(smtphost='smtp.qq.com', mailfrom='859905874@qq.com', smtpport=465,
                         smtpssl=True, smtpuser='859905874@qq.com', smtppass='cgcxzdatxduybbhh')
     custom_settings = {
-        # 'CONCURRENT_REQUESTS_PER_DOMAIN' : 4,
-        'LOG_LEVEL': 'INFO'
-        # 'DOWNLOAD_DELAY': 0.3,
+    # 'CONCURRENT_REQUESTS_PER_DOMAIN' : 4,
+    'LOG_LEVEL': 'INFO'
+    # 'DOWNLOAD_DELAY': 0.3,
     }
-    
+
     def parse(self, response: TextResponse):
-        is_blank = self.blank_html_extractor.is_blank(response)
-        if is_blank:
+        response_is_blank = self.blank_html_extractor.is_blank(response)
+        if response_is_blank:
             blank_result = {'type': 'gov', 'reason': '网页内容为空', 'url': response.url}
             render_dict = {
                 'title': '（PyScraper发送）错误网站',
@@ -55,7 +54,7 @@ class test_create_gov_scriptSpider(Spider):
             body = render_error_correction_result_mail(**render_dict)
             self.mailer.send(to=["859905874@qq.com"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
             yield blank_result
-        
+
         error_correction_result = self.error_correction_extractor.find_error(response)
         if error_correction_result:
             print("error_correction_result", error_correction_result)
@@ -66,9 +65,9 @@ class test_create_gov_scriptSpider(Spider):
                 'table_data': error_correction_result}
             body = render_error_correction_result_mail(**render_dict)
             self.mailer.send(to=["859905874@qq.com"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
-            
+
             yield {'type': 'gov', 'reason': '网页无法访问状态{}'.format(response.status), 'url': response.url}
-        
+
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
         for link in links:
             yield Request(link.url, callback=self.parse, errback=self.errorback)
@@ -78,13 +77,13 @@ class test_create_gov_scriptSpider(Spider):
         data_proxy_extractor = DataProxyXmlLinkExtractor()
         if data_proxy_extractor.has_dataproxy_link(response):
             yield data_proxy_extractor.gen_dataproxy_links()
-    
+
     def errorback(self, failure):
         if isinstance(failure.value, HttpError):
             response = failure.value.response
             result = {'type': 'gov', 'reason': '网页无法访问状态{}'.format(response.status), 'url': response.url}
             yield result
-            
+
             render_dict = {
                 'title': '（PyScraper发送）错误网站',
                 'url': response.url,
@@ -92,8 +91,8 @@ class test_create_gov_scriptSpider(Spider):
                 'table_data': result['reason']}
             body = render_error_correction_result_mail(**render_dict)
             self.mailer.send(to=["859905874@qq.com"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
-        
-        print('repsonse is error in response.url:', failure)
+
+        print('response is error in response.url:', failure)
 
 
 if __name__ == '__main__':
@@ -102,5 +101,5 @@ if __name__ == '__main__':
         # "LOG_FILE": "./wzkjj.log"
     }
     process = CrawlerProcess(settings=settings)
-    process.crawl(test_create_gov_scriptSpider)
+    process.crawl(wzskjjcs4Spider)
     process.start()

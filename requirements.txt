@@ -13,3 +13,5 @@ pymysql
 sqlalchemy_utils
 pytest-flask>=0.10.0
 pytest-mock>=1.10.0
+beautifulsoup4==4.6.0
+lxml==4.2.1

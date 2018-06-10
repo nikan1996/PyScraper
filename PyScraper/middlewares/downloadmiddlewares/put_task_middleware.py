@@ -10,7 +10,7 @@
 """
 from scrapy.exceptions import IgnoreRequest
 
-from PyScraper.server.app import create_app
+from PyScraper.server.app import create_app_forcontext
 from PyScraper.server.resource_handlers.task_handler import TaskHandler
 import logging
 
@@ -25,7 +25,7 @@ class TaskMiddleware:
         self.stats = crawler.stats
         self.settings = crawler.settings
         self.project_id = self.settings.get('project_id')
-        self.app = create_app(spider_loop=False)
+        self.app = create_app_forcontext()
         self.task_handler = TaskHandler()
 
     def process_response(self, request, response, spider):
