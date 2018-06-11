@@ -53,6 +53,7 @@
             </el-tab-pane>
 
             <el-tab-pane label="政府内容检索结果" name="gov_result" v-if="project_type==='gov'">
+                <el-tag>检索结果仅代表可能出错结果</el-tag>
                 <el-table id='gov_resulttable'
                           :data="computed_gov_result_data"
                           stripe
@@ -63,7 +64,7 @@
                                 <p class="popword">{{scope.row.full_url}}</p>
                                 <div slot="reference" class="name-wrapper">
                                     <a class="link" target="_blank"
-                                       :href="scope.row.short_url">{{scope.row.short_url}}</a>
+                                       :href="scope.row.full_url">{{scope.row.short_url}}</a>
 
                                 </div>
                             </el-popover>

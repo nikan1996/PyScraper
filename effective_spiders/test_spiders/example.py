@@ -9,13 +9,9 @@
 @time: 2018/5/30 下午4:22
 """
 
-import re
 import scrapy
 from scrapy.crawler import CrawlerProcess
 from scrapy.http import TextResponse
-from twisted.internet import reactor
-from PyScraper.utils.twisted_utils import aiosleep
-from twisted.internet.defer import inlineCallbacks
 
 
 class ExampleItem(scrapy.Item):
@@ -49,7 +45,7 @@ class BlockExampleSpider(ExampleSpider):
         print("example will hang 60 second ")
         for i in range(30):
             yield scrapy.Request("http://example.com/", callback=self.parse, dont_filter=True)
-
+        
         print("example was stopped now")
 
 

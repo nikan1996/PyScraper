@@ -12,7 +12,7 @@
         <div v-cloak>
             <el-table :data="show_projects.slice((currentPage-1)*pagesize,currentPage*pagesize)" stripe
                       style="width: 100%"
-                      :default-sort="{prop: 'update_timestamp', order: 'descending'}">
+                      :default-sort="{prop: 'project_id', order: 'descending'}">
                 <el-table-column prop="'tag" label="标签" width="180">
                 </el-table-column>
                 <el-table-column prop="project_name" label="项目名称" width="180">
@@ -50,6 +50,12 @@
 <script>
     import axios from 'axios';
 
+    function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        let x = a[key]; let y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
     export default {
         name: "Projects",
         created() {
@@ -98,7 +104,7 @@
         methods: {
             fetchData() {//获取项目列表
                 axios.get('/projects').then((response) => {
-                    this.projects = response.data;
+                    this.projects = sortByKey(response.data, 'update_timestamp').reverse();
                 }).catch((response) => {
                     console.log(response);
                     this.$message.error({

@@ -28,5 +28,14 @@ def test_blank_html_1():
     
     
 def test_blank_html_2():
-    html = """"""
+    html = """<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+
+    </html>"""
+    ble = BlankHtmlExtractor()
+    assert ble.is_blank(html) is True
     

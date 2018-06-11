@@ -70,7 +70,7 @@ class DataProxyXmlLinkExtractor:
         """判断政府网站是否包括dataproxy接口的探测与解析"""
         record_urls = self.dataproxy_xml_extract(response.text)
         for url in record_urls:
-            yield Request(url)
+            yield Request(url, meta={"url": url, "first_url": response.url})
             
     def get_recordset_href(self, record_set: [ElementTree.Element]):
         """

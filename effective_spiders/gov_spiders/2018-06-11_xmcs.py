@@ -4,9 +4,9 @@
 
 @author:nikan
 
-@file: {{spider_name}}.py
+@file: xmcs.py
 
-@time: {{datetime}}
+@time: 2018-06-11 00:48:26
 """
 from typing import List
 
@@ -25,18 +25,14 @@ from PyScraper.extractor.xml_link import DataProxyXmlLinkExtractor
 from PyScraper.utils.mail import render_error_correction_result_mail
 
 
-class {{spider_name}}Spider(Spider):
-    name = '{{spider_name}}'
-    allowed_domains = ['{{allowed_domain}}']
-    start_urls = ['{{start_url}}']
+class xmcsSpider(Spider):
+    name = 'xmcs'
+    allowed_domains = ['wzkj.wenzhou.gov.cn']
+    start_urls = ['http://wzkj.wenzhou.gov.cn/']
     rules = [
-    {% for rule in rules -%}
-    {{rule}},
-    {% endfor -%}
-
     ]
     htmk_link_extractor = HtmlLinkExtractor()
-    error_correction_extractor = ErrorCorrectionExtractor(rules, domain='{{allowed_domain}}')
+    error_correction_extractor = ErrorCorrectionExtractor(rules, domain='wzkj.wenzhou.gov.cn')
     blank_html_extractor = BlankHtmlExtractor()
     mailer = MailSender(smtphost='smtp.qq.com', mailfrom='859905874@qq.com', smtpport=465,
                         smtpssl=True, smtpuser='859905874@qq.com', smtppass='cgcxzdatxduybbhh')
@@ -59,7 +55,7 @@ class {{spider_name}}Spider(Spider):
                 'table_head': ['错误原因'],
                 'table_data': blank_result['reason']}
             body = render_error_correction_result_mail(**render_dict)
-            self.mailer.send(to=["{{mail_to}}"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
+            self.mailer.send(to=["859905874@qq.com"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
 
         error_correction_result = self.error_correction_extractor.find_error(response)
         if error_correction_result:
@@ -74,7 +70,7 @@ class {{spider_name}}Spider(Spider):
                 'table_head': ['正确词', '错误词'],
                 'table_data': error_correction_result}
             body = render_error_correction_result_mail(**render_dict)
-            self.mailer.send(to=["{{mail_to}}"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
+            self.mailer.send(to=["859905874@qq.com"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
 
 
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
@@ -100,7 +96,7 @@ class {{spider_name}}Spider(Spider):
                 'table_head': ['错误原因'],
                 'table_data': result['reason']}
             body = render_error_correction_result_mail(**render_dict)
-            self.mailer.send(to=["{{mail_to}}"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
+            self.mailer.send(to=["859905874@qq.com"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
 
         print('response is error in response.url:', failure)
 
@@ -111,5 +107,5 @@ if __name__ == '__main__':
         # "LOG_FILE": "./wzkjj.log"
     }
     process = CrawlerProcess(settings=settings)
-    process.crawl({{spider_name}}Spider)
+    process.crawl(xmcsSpider)
     process.start()

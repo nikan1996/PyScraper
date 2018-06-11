@@ -15,14 +15,25 @@
     </div>
 </template>
 <script>
+    import axios from 'axios';
+
     export default {
         name: "Index",
+        created(){
+            this.fetchData();
+        },
         data() {
             return {
-                activeNames: ['1']
+                activeNames: ['1'],
+                project_num: '',
+                data_num:'',
+                running_project_num:'',
             };
         },
         methods: {
+            fetchData(){
+
+            },
             handleChange(val) {
                 console.log(val);
             }

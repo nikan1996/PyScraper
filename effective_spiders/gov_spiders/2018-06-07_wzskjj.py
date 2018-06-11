@@ -32,7 +32,7 @@ class wzskjjSpider(Spider):
     ('瑞[\s\S]{1}科技', '瑞）科技'),
     ]
     htmk_link_extractor = HtmlLinkExtractor()
-    error_correction_extractor = ErrorCorrectionExtractor(rules)
+    error_correction_extractor = ErrorCorrectionExtractor(rules, domain=allowed_domains[0])
     mailer = MailSender(smtphost='smtp.qq.com', mailfrom='859905874@qq.com', smtpport=465,
                         smtpssl=True, smtpuser='859905874@qq.com', smtppass='cgcxzdatxduybbhh')
     custom_settings = {

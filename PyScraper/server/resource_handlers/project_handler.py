@@ -23,6 +23,8 @@ class ProjectHandler:
     def create_project(self, *, project_name, setting, cron_config, tag):
         if not setting.get('spidercls'):
             spider_name = setting.get('spider_name')
+            if spider_name[0].isdigit():
+                spider_name = 'a' + spider_name
             rules = setting.get('rules')
             start_url = setting.get('start_url')
             mail_to = setting.get('information_config').get('email')

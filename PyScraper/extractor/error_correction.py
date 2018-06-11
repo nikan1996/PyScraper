@@ -23,7 +23,7 @@ class ErrorCorrectionExtractor:
     """
     wildcard_mapping = {'*': '[\s\S]{1}'}
     
-    def __init__(self, pairs: List[Tuple[str, str]], domain: str):
+    def __init__(self, pairs: List[(Tuple or List)[str, str]], domain: str):
         pairs = self.to_safe(pairs)
         
         global_pairs = self.to_safe(self.get_global_pairs(domain=domain))

@@ -21,6 +21,6 @@ class BlankHtmlExtractor:
         else:
             raise Exception("response need be string or TextResponse")
         soup = BeautifulSoup(content, 'lxml')
-        if soup.body.text.strip():
+        if soup.body and soup.body.text.strip():
             return False
         return True
