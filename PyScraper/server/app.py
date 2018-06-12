@@ -25,6 +25,7 @@ from PyScraper.server.resources.gov_lexicon import GovLexicon, GovRule
 from PyScraper.server.resources.project import Projects, Project, ProjectAction
 from PyScraper.server.resources.result import Result
 from PyScraper.server.resources.spider import Spiders
+from PyScraper.server.resources.statistics import Statistics
 from PyScraper.server.resources.task import Task
 from PyScraper.utils import run_in_thread
 
@@ -116,6 +117,8 @@ def configure_api(app):
     
     api.add_resource(GovLexicon, '/gov_lexicon')
     api.add_resource(GovRule, '/gov_lexicon/<int:rule_id>')
+    
+    api.add_resource(Statistics, '/statistics')
 
 def configure_logging(app):
     config_file = '{project_path}/logger.json'

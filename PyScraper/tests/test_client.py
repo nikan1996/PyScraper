@@ -43,9 +43,6 @@ def less_equal(dict1: dict, dict2: dict):
         dict1, dict2 = dict2, dict1
     for key in dict1.keys():
         if dict1[key] != dict2[key]:
-            print(key)
-            print(dict1[key])
-            print(dict2[key])
             return False
     return True
 
@@ -129,6 +126,7 @@ def test_project_api(client):
             'account': 'test@qq.com',
             'password': 'asdf$#@asd'  # usually authorization code in almost email servers
         },
+        "spidercls": "effective_spiders.test_spiders.example.ExampleSpider"
     }
     cron_config = {
         'cron_time': 10,
@@ -172,12 +170,25 @@ def test_project_api(client):
     assert response.status_code == 200
     assert dictify(response) is None
 
+
 def test_task_api(client):
     # get the list of tasks
     response = client.get('/task/1?limit=10&page=1')
     assert response.status_code == 200
     
+    
 def test_result_api(client):
     # get the list of tasks
     response = client.get('/result/1?limit=10&page=1')
     assert response.status_code == 200
+
+
+def test_statistics_api(client):
+    response = client.get('/statistics')
+    assert response.status_code == 200
+    _dict = {
+        "project_num": 0,
+        "running_project_num": 0,
+        "all_result_num": 0
+    }
+    assert less_equal(dictify(response), _dict)
