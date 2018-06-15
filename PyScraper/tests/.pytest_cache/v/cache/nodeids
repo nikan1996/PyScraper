@@ -1,3 +1,7 @@
 [
-  "test_blank_html.py::test_blank_html_2"
+  "test_client.py::test_database_api",
+  "test_client.py::test_project_api",
+  "test_client.py::test_task_api",
+  "test_client.py::test_result_api",
+  "test_client.py::test_statistics_api"
 ]
