@@ -104,4 +104,4 @@ ENV/
 node_modules/
 *.log*
 effective_spiders/gov_spiders/
-PyScraper/tests/.pytest_cache/
+*.pytest_cache/
