@@ -14,8 +14,9 @@ from PyScraper.server.resource_handlers.result_handler import ResultHandler
 import logging
 
 logger = logging.getLogger(__name__)
-class ResultPipeline:
 
+
+class ResultPipeline:
     @classmethod
     def from_crawler(cls, crawler):
         return cls(crawler)
@@ -26,7 +27,7 @@ class ResultPipeline:
         self.project_id = self.settings.get('project_id')
         self.app = create_app_forcontext()
         self.result_handler = ResultHandler()
-        
+    
     def process_item(self, item, spider):
         try:
             with self.app.app_context():

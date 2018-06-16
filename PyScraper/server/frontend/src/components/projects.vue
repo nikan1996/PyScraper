@@ -1,8 +1,8 @@
 <template>
     <div id="projects">
-        <router-link to="/create_project">
-            <el-button type="primary">新建项目</el-button>
-        </router-link>
+        <!--<router-link to="/create_project">-->
+            <!--<el-button type="primary">新建项目</el-button>-->
+        <!--</router-link>-->
         <router-link to="/create_gov_project">
             <el-button type="primary">新建政府项目</el-button>
         </router-link>

@@ -27,8 +27,8 @@ class TaskHandler:
         }
         return result
     
-    def put_newtask(self, project_id, url, status_code, reason=None):
-        new_task = Task(project_id=project_id, url=url, status_code=status_code, reason=reason)
+    def put_newtask(self, project_id, url, content, status_code, reason=None):
+        new_task = Task(project_id=project_id, url=url, content=content, status_code=status_code, reason=reason)
         db.session.add(new_task)
         db.session.commit()
         return project_id

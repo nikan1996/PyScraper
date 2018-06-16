@@ -11,7 +11,7 @@
 
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/pyscraper'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/wenzhou_gov'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     # SQLALCHEMY_POOL_SIZE = 3
     # By default, MariaDB is configured to have a 600 second timeout.
@@ -20,6 +20,6 @@ class Config:
     
 class TestConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/test_pyscraper'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@localhost:3306/test_wenzhou_gov'
     SQLALCHEMY_POOL_SIZE = 5
     SQLALCHEMY_POOL_RECYCLE = 600

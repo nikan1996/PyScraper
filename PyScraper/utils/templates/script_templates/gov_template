@@ -68,14 +68,6 @@ class {{spider_name}}Spider(Spider):
             message = "\n".join(["正确词：{} 错误词： {}".format(error['correct'], error['error']) for error in error_correction_result])
             yield {'type': 'gov', 'reason': '网页中有错误词:\n' + message, 'url': request_url or response.url}
 
-            render_dict = {
-                'title': '（PyScraper发送）错误网站',
-                'url': request_url or response.url,
-                'table_head': ['正确词', '错误词'],
-                'table_data': error_correction_result}
-            body = render_error_correction_result_mail(**render_dict)
-            self.mailer.send(to=["{{mail_to}}"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
-
 
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
         for link in links:
@@ -94,13 +86,6 @@ class {{spider_name}}Spider(Spider):
             result = {'type': 'gov', 'reason': '网页无法访问状态{}'.format(response.status), 'url': request_url or response.url}
             yield result
 
-            render_dict = {
-                'title': '（PyScraper发送）错误网站',
-                'url': response.url,
-                'table_head': ['错误原因'],
-                'table_data': result['reason']}
-            body = render_error_correction_result_mail(**render_dict)
-            self.mailer.send(to=["{{mail_to}}"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
 
         print('response is error in response.url:', failure)
 

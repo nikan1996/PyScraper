@@ -155,7 +155,7 @@ def start_spider_loop(queue):
         'REACTOR_THREADPOOL_MAXSIZE': 30,  # 设置reactor 线程池最大数量
         'TELNETCONSOLE_ENABLED': False,
         'DOWNLOADER_MIDDLEWARES': {
-            'PyScraper.middlewares.downloadmiddlewares.put_task_middleware.TaskMiddleware': 999,
+            'PyScraper.middlewares.downloadmiddlewares.put_task_middleware.TaskMiddleware': 1,
         },
         'ITEM_PIPELINES': {
             'PyScraper.pipelines.result_pipeline.ResultPipeline': 999

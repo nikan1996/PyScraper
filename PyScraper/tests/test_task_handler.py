@@ -21,15 +21,17 @@ def test_task_handler(app):
         task_handler = TaskHandler()
         project_id = 1
         url = 'https://www.test.com'
+        content = ''
         status_code = 200
         _dict = {
             'project_id': project_id,
             'url': url,
+            'content': content,
             'status_code': status_code,
         }
         for i in range(20):
             time.sleep(0.15)
-            task_handler.put_newtask(project_id=project_id, url=url, status_code=status_code)
+            task_handler.put_newtask(project_id=project_id, url=url, content=content, status_code=status_code)
         
         result = task_handler.get(project_id=project_id)
         assert result['count'] == 10
