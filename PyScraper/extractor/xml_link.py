@@ -64,13 +64,13 @@ class DataProxyXmlLinkExtractor:
         self.dataproxy_xml_extract(response.text, first_page=True)
         for num in range(1, self.total_page + 1):
             later_url = self.dataproxy_first_page_url.replace("page=1", "page={num}".format(num=num))
-            yield Request(later_url, callback=self.yield_record_link)
+            yield Request(later_url, callback=self.yield_record_link,  meta={"url": later_url, "previous_url": response.url})
     
     def yield_record_link(self, response):
         """判断政府网站是否包括dataproxy接口的探测与解析"""
         record_urls = self.dataproxy_xml_extract(response.text)
         for url in record_urls:
-            yield Request(url, meta={"url": url, "first_url": response.url})
+            yield Request(url, meta={"url": url, "previous_url": response.url})
             
     def get_recordset_href(self, record_set: [ElementTree.Element]):
         """

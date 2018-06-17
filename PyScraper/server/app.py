@@ -19,7 +19,7 @@ from flask import Flask, jsonify
 from flask_restful import Api
 from sqlalchemy_utils import database_exists, create_database
 
-from PyScraper.server.extensions import db, spidercls_queue
+from PyScraper.server.extensions import db, spidercls_queue, auth
 from PyScraper.server.resources.database import Databases, Database
 from PyScraper.server.resources.gov_lexicon import GovLexicon, GovRule
 from PyScraper.server.resources.project import Projects, Project, ProjectAction
@@ -91,7 +91,12 @@ def init_app_callbacks(app):
 
 def configure_api(app):
     api = Api(app)
-    
+
+    @app.route('/')
+    @auth.login_required
+    def index():
+        return "Hello, %s!" % auth.username()
+
     @app.route("/healthz")
     def health():
         return "ready to go!\n", 200

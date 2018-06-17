@@ -21,13 +21,13 @@ class ErrorCorrectionExtractor:
     """
     政府网站纠错解析器
     """
-    wildcard_mapping = {'*': '[\s\S]{1}'}
+    wildcard_mapping = {'*': '[\s\S]+?', '?': '[\s\S]{1}'}
     
     def __init__(self, pairs: List[(Tuple or List)[str, str]], domain: str):
         pairs = self.to_safe(pairs)
         
         global_pairs = self.to_safe(self.get_global_pairs(domain=domain))
-        self.compiled_pairs: List[Tuple[Pattern, str]] = self.compile_pairs(pairs + global_pairs)
+        self.compiled_pairs = self.compile_pairs(pairs + global_pairs)
         
         self.has_error_urls = set()
     
@@ -55,12 +55,14 @@ class ErrorCorrectionExtractor:
             return GovLexiconHandler().get_all_rules_by_domain(domain)
     
     def convert_pairs(self, pairs: List[Tuple[str, str]]):
-        return [(rule[0].replace('*', self.wildcard_mapping['*']), rule[1]) for rule in pairs]
+        local_pairs = pairs
+        for wild_card_map_key, wild_card_map_value in self.wildcard_mapping.items():
+            local_pairs = [(rule[0].replace(wild_card_map_key, wild_card_map_value), rule[1]) for rule in local_pairs]
+        return local_pairs
     
     def compile_pairs(self, pairs: List[Tuple[str, str]]):
-        pairs = self.convert_pairs(pairs)
         """
         pair eg.[("关于下达温州市201([\s\S]{1})年公益性科技计划项目", "关于下达温州市2017年公益性科技计划项目")]
-        :return:
         """
+        pairs = self.convert_pairs(pairs)
         return [(re.compile(pair[0]), pair[1]) for pair in pairs]

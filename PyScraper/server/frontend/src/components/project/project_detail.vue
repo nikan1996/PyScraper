@@ -24,14 +24,12 @@
                                layout="total, sizes, prev, pager, next, jumper" :total="task_total">
                 </el-pagination>
             </el-tab-pane>
-            <el-tab-pane label="解析结果列表" name="result" v-if="project_type!=='gov'">
+            <el-tab-pane label="错误连接" name="error_link">
                 <el-table id='resulttable'
                           :data="computed_result_data"
                           stripe
                           style="width: 100%;"
                 >
-                    <!--<el-table-column prop="url" label="爬取链接">-->
-                    <!--</el-table-column>-->
                     <el-table-column label="解析结果（如结果太长仅展示部分, 鼠标悬浮在结果行查看全部）">
                         <template slot-scope="scope">
                             <el-popover trigger="hover" placement="bottom-start" width="400">
