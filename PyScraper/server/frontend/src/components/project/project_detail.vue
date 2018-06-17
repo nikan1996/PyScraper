@@ -1,7 +1,7 @@
 <template>
     <div id="project_detail">
         <el-tabs type="card" v-model="activeName">
-            <el-tab-pane label="执行任务列表" name="task">
+            <el-tab-pane label="已爬取网站列表" name="task">
                 <el-table id='tasktable'
                           :data="task_data.result"
                           stripe
@@ -52,7 +52,7 @@
                 </el-pagination>
             </el-tab-pane>
 
-            <el-tab-pane label="政府内容检索结果" name="gov_result" v-if="project_type==='gov'">
+            <el-tab-pane label="不符合规则的结果" name="gov_result" v-if="project_type==='gov'">
                 <el-tag>检索结果仅代表可能出错结果</el-tag>
                 <el-table id='gov_resulttable'
                           :data="computed_gov_result_data"
@@ -113,7 +113,7 @@
                 },
                 result_currentPage: 1,
                 result_pagesize: 9,
-                project_type: '',
+                project_type: 'gov',
             }
         },
         computed: {

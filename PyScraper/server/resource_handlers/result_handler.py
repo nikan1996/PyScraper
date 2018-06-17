@@ -49,3 +49,20 @@ class ResultHandler:
             return db.session.query(func.count(Result.result_id)).filter_by(project_id=project_id).scalar()
         else:
             return db.session.query(func.count(Result.result_id)).scalar()
+    
+    def grounding_sourcecode(self, project_id):
+        """
+        渲染当时爬取的网页源码并给出标红的源码
+        :return:
+        """
+    
+    def grounding_sourcecode_realtime(self, project_id):
+        """
+        实时地渲染网页并给出标红的源码
+        目前只支持直接进行http1.1请求得到源码，
+        不支持浏览器渲染后得到源码的方式
+        :param project_id:
+        :return:
+        """
+        result_item = Result.query.filter_by(project_id=project_id).first()
+        # sourcecode = requests.get()

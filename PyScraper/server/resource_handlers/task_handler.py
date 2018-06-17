@@ -27,7 +27,7 @@ class TaskHandler:
         }
         return result
     
-    def put_newtask(self, project_id, url, content, status_code, reason=None):
+    def put_newtask(self, project_id, url, status_code, content=None, reason=None):
         new_task = Task(project_id=project_id, url=url, content=content, status_code=status_code, reason=reason)
         db.session.add(new_task)
         db.session.commit()
@@ -38,5 +38,3 @@ class TaskHandler:
             return db.session.query(func.count(Task.task_id)).filter_by(project_id=project_id).scalar()
         else:
             return db.session.query(func.count(Task.task_id)).scalar()
-
-

@@ -38,8 +38,6 @@ class {{spider_name}}Spider(Spider):
     htmk_link_extractor = HtmlLinkExtractor()
     error_correction_extractor = ErrorCorrectionExtractor(rules, domain='{{allowed_domain}}')
     blank_html_extractor = BlankHtmlExtractor()
-    mailer = MailSender(smtphost='smtp.qq.com', mailfrom='859905874@qq.com', smtpport=465,
-                        smtpssl=True, smtpuser='859905874@qq.com', smtppass='cgcxzdatxduybbhh')
     custom_settings = {
     # 'CONCURRENT_REQUESTS_PER_DOMAIN' : 4,
     'LOG_LEVEL': 'INFO'
@@ -50,23 +48,16 @@ class {{spider_name}}Spider(Spider):
         request_url = response.meta.get("url")
         response_is_blank = self.blank_html_extractor.is_blank(response)
         if response_is_blank:
-            blank_result = {'type': 'gov', 'reason': '网页内容为空', 'url': request_url or response.url}
+            blank_result = {'type': 'gov', 'reason': '网页内容为空', 'url': request_url or response.url，'content': response.text,}
             yield blank_result
 
-            render_dict = {
-                'title': '（PyScraper发送）错误网站',
-                'url': request_url or response.url,
-                'table_head': ['错误原因'],
-                'table_data': blank_result['reason']}
-            body = render_error_correction_result_mail(**render_dict)
-            self.mailer.send(to=["{{mail_to}}"], subject='(PyScraper发送）网站纠错情况', body=body, mimetype='text/html')
 
         error_correction_result = self.error_correction_extractor.find_error(response)
         if error_correction_result:
             print("error_correction_result", error_correction_result)
 
             message = "\n".join(["正确词：{} 错误词： {}".format(error['correct'], error['error']) for error in error_correction_result])
-            yield {'type': 'gov', 'reason': '网页中有错误词:\n' + message, 'url': request_url or response.url}
+            yield {'type': 'gov', 'reason': '网页中有错误词:\n' + message, 'url': request_url or response.url， 'content': response.text, 'error': error}
 
 
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
@@ -83,7 +74,7 @@ class {{spider_name}}Spider(Spider):
         if isinstance(failure.value, HttpError):
             response = failure.value.response
             request_url = response.meta.get("url")
-            result = {'type': 'gov', 'reason': '网页无法访问状态{}'.format(response.status), 'url': request_url or response.url}
+            result = {'type': 'gov', 'reason': '错误链接{}'.format(response.status), 'url': request_url or response.url, 'content': None}
             yield result
 
 
