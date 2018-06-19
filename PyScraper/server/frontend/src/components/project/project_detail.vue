@@ -23,8 +23,8 @@
                     <el-table-column prop="update_timestamp" label="爬取时间">
                     </el-table-column>
                 </el-table>
-                <div ></div>
-                <el-pagination  @size-change="task_handleSizeChange"
+                <div></div>
+                <el-pagination @size-change="task_handleSizeChange"
                                @current-change="task_handleCurrentChange"
                                :current-page="task_currentPage" :page-sizes="[5, 9, 10]" :page-size="task_pagesize"
                                layout="total, sizes, prev, pager, next, jumper" :total="task_total">
@@ -34,10 +34,28 @@
 
             <el-tab-pane label="不符合规则的结果" name="error_word">
                 <el-tag>检索结果仅代表不匹配结果（也有可能语义在上下文中是正确的，请继续人工筛选）</el-tag>
+                <template>
+                    <el-select v-model="select_lexicon_correct_word" clearable placeholder="请选择正确词" @change="update_computed_error_word">
+                        <el-option
+                                v-for="item in project_lexicon_data"
+                                :key="item.rule_id"
+                                :label="' 正确词:' + item.correct_word"
+                                :value="item.correct_word"
+                        >
+                            <span style="float: left">{{ item.correct_word }}</span>
+                        </el-option>
+                    </el-select>
+                </template>
+
                 <el-table id='error_word_table'
-                          :data="computed_error_word"
+                          :data="computed_error_word.slice((error_word_currentPage-1)*error_word_pagesize,error_word_currentPage*error_word_pagesize)"
                           stripe
                           style="width: 100%;">
+                    <el-table-column
+                            type="index"
+                            width="50"
+                            label="序号">
+                    </el-table-column>
                     <el-table-column label="网址" width="600">
                         <template slot-scope="scope">
                             <el-popover trigger="hover" placement="bottom-start" width="400">
@@ -49,24 +67,35 @@
                             </el-popover>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="reason" label="理由">
-                    </el-table-column>
 
-                    <el-table-column prop="update_timestamp" label="检索时间">
+                    <el-table-column prop="correct_word" label="正确词"></el-table-column>
+                    <el-table-column prop="error_word" label="错误词"></el-table-column>
+
+                    <el-table-column prop="update_timestamp" label="检索时间"></el-table-column>
+                    <el-table-column
+                            fixed="right"
+                            label="分析"
+                            width="100">
+                        <template slot-scope="scope">
+                            <el-button type="primary" size="small" @click="delete_result(scope.row.result_id)">已解决
+                            </el-button>
+                        </template>
                     </el-table-column>
                 </el-table>
-                <div></div>
                 <el-pagination @size-change="error_word_handleSizeChange"
                                @current-change="error_word_handleCurrentChange"
                                :current-page="error_word_currentPage" :page-sizes="[5, 9, 10]"
                                :page-size="error_word_pagesize"
                                layout="total, sizes, prev, pager, next, jumper" :total="error_word_total">
                 </el-pagination>
+
+                <el-button type="primary" @click="delete_results('error_word')">删除全部</el-button>
+
             </el-tab-pane>
 
             <el-tab-pane label="错误链接列表" name="error_link">
                 <el-table id='resulttable'
-                          :data="computed_error_link"
+                          :data="computed_error_link.slice((error_link_currentPage-1)*error_link_pagesize,error_link_currentPage*error_link_pagesize)"
                           stripe
                           style="width: 100%;"
                 >
@@ -113,10 +142,13 @@
                                :page-size="error_link_pagesize"
                                layout="total, sizes, prev, pager, next, jumper" :total="error_link_total">
                 </el-pagination>
+                <el-button type="primary" @click="delete_results('error_link')">删除全部</el-button>
+
             </el-tab-pane>
             <el-tab-pane label="政府关键词库" name="gov_lexicon">
                 <el-table id='lexicontable'
-                          :data="gov_lexicon_data.slice((lexicon_currentPage-1)*lexicon_pagesize,lexicon_currentPage*lexicon_pagesize)" stripe
+                          :data="project_lexicon_data.slice((lexicon_currentPage-1)*lexicon_pagesize,lexicon_currentPage*lexicon_pagesize)"
+                          stripe
                           style="width: 100%;"
                           :default-sort="{prop: 'update_timestamp', order: 'descending'}"
                 >
@@ -137,9 +169,9 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div id="letPaginationBottom"></div>
                 <el-pagination id="ele_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                               :current-page="lexicon_currentPage" :page-sizes="[5, 9, 10]" :page-size="lexicon_pagesize"
+                               :current-page="lexicon_currentPage" :page-sizes="[5, 9, 10]"
+                               :page-size="lexicon_pagesize"
                                layout="total, sizes, prev, pager, next, jumper" :total="lexicon_total">
                 </el-pagination>
             </el-tab-pane>
@@ -168,7 +200,8 @@
                         <el-button @click.prevent="removeRule(gov_rule)">删除</el-button>
                     </div>
                     <el-button @click.prevent="addRule">新增规则</el-button>
-                    <el-button type="primary" style="margin-top: 12px;" @click="lexicon_submitForm('gov_rule_form')">立即添加
+                    <el-button type="primary" style="margin-top: 12px;" @click="lexicon_submitForm('gov_rule_form')">
+                        立即添加
                     </el-button>
 
 
@@ -182,9 +215,13 @@
 <script>
     import axios from 'axios';
     import ElTabPane from "../../../node_modules/element-ui/packages/tabs/src/tab-pane.vue";
+    import ElButton from "../../../node_modules/element-ui/packages/button/src/button.vue";
 
     export default {
-        components: {ElTabPane},
+        components: {
+            ElButton,
+            ElTabPane
+        },
         name: 'Project',
         created() {
             this.fetchData();
@@ -192,6 +229,51 @@
         data() {
             return {
                 activeName: 'task',
+                project_data: {
+                    "project_id": '',
+                    "project_name": "",
+                    "setting": {
+                        "rules": [],
+                        "spidercls": "",
+                        "start_url": "",
+                        "obey_robots": false,
+                        "script_type": "",
+                        "spider_name": "",
+                        "proxy_enabled": false,
+                        "repeat_enabled": false,
+                        "database_config": {},
+                        "information_config": {}
+                    },
+                    "cron_config": {},
+                    "tag": "",
+                    "status": "",
+                    "is_deleted": false,
+                    "update_timestamp": "",
+                    "create_timestamp": ""
+                }
+                ,
+                //                {
+                //    "project_id": 7,
+                //    "project_name": "温州市科技局1",
+                //    "setting": {
+                //        "rules": [],
+                //        "spidercls": "effective_spiders.gov_spiders.2018-06-19_wzskjj2.wzskjj2Spider",
+                //        "start_url": "http://wzkj.wenzhou.gov.cn/",
+                //        "obey_robots": false,
+                //        "script_type": "gov",
+                //        "spider_name": "wzskjj2",
+                //        "proxy_enabled": false,
+                //        "repeat_enabled": false,
+                //        "database_config": {},
+                //        "information_config": {}
+                //    },
+                //    "cron_config": {},
+                //    "tag": "",
+                //    "status": "stop",
+                //    "is_deleted": true,
+                //    "update_timestamp": "2018-06-19 22:22:35",
+                //    "create_timestamp": "2018-06-19 16:58:38"
+                //}
                 task_data: {
                     total_count: "",
                     count: "",
@@ -199,21 +281,24 @@
                 },
                 task_currentPage: 1,
                 task_pagesize: 9,
+
+                select_lexicon_correct_word: '',
                 error_word: {
                     total_count: "",
                     count: "",
                     result: [],
                 },
+                current_correct_word_show: 'all',
                 error_link: {
                     total_count: "",
                     count: "",
                     result: [],
                 },
                 error_word_currentPage: 1,
-                error_word_pagesize: 9,
+                error_word_pagesize: 5,
 
                 error_link_currentPage: 1,
-                error_link_pagesize: 9,
+                error_link_pagesize: 5,
                 gov_lexicon_data: [],
 
                 gov_rule_form: {gov_rules: [['', '', '']]},
@@ -254,11 +339,17 @@
                         short_url = value.result.url.slice(0, 66) + '...'
                     }
                     let tmp_value = {
-                        result: short_result_item,
+                        result_id: value.result_id,
                         full_url: value.result.url,
                         short_url: short_url,
                         reason: value.result.reason,
+                        correct_word: value.result.error.correct,
+                        error_word: value.result.error.error,
                         update_timestamp: value.update_timestamp,
+                    };
+                    let show_word = this.current_correct_word_show;
+                    if((show_word !== 'all') && (show_word!== tmp_value.correct_word)){
+                        continue;
                     }
                     tmp_list.push(tmp_value);
                 }
@@ -289,28 +380,52 @@
                 console.log(tmp_list);
                 return tmp_list;
             },
-
+            project_lexicon_data: function () {
+                if (this.project_data.setting.start_url === undefined) {
+                    return [];
+                }
+                let tmp_lexicon_data = [];
+                for (let value of this.gov_lexicon_data) {
+                    if (this.project_data.setting.start_url.includes(value.domain) === true) {
+                        tmp_lexicon_data.push(value
+                        );
+                    }
+                }
+                return tmp_lexicon_data;
+            },
             task_total: function () {
                 return Number(this.task_data.total_count)
             },
             error_word_total: function () {
-                return Number(this.error_word.total_count)
+                return Number(this.computed_error_word.length)
             },
             error_link_total: function () {
-                return Number(this.error_link.total_count)
+                return Number(this.computed_error_link.length)
             },
             lexicon_total: function () {
-                return this.gov_lexicon_data.length
+                return this.project_lexicon_data.length
             },
 
 
         },
         methods: {
             fetchData() {
+                this.fetchProjectData();
                 this.fetchTaskData();
                 this.fetch_error_word_data();
                 this.fetch_error_link_data();
-                this.fetch_lexicon_data()
+                this.fetch_lexicon_data();
+            },
+            fetchProjectData() {
+                axios.get('/project/' + this.$route.params.project_id).then((response) => {
+                    console.log(response.data);
+                    this.project_data = response.data;
+                }).catch((response) => {
+                    console.log(response);
+                    this.$message.error({
+                        message: "获取项目数据失败啦，检查下你的网络吧"
+                    });
+                });
             },
             fetchTaskData() {//获取爬取任务列表
                 axios.get('/task/' + this.$route.params.project_id + '?limit=' + this.task_pagesize + '&page=' + this.task_currentPage).then((response) => {
@@ -381,19 +496,24 @@
                 this.error_link_currentPage = val;
                 console.log(`当前页: ${val}`);
             },
-            delete_result(result_id) {
-                this.$confirm('此操作将删除记录, 是否删除?', '提示', {
+            update_computed_error_word(){
+                this.current_correct_word_show = this.select_lexicon_correct_word;
+            },
+            delete_results(type) {
+                console.log(type);
+                this.$confirm('此操作将删除该项目所有不符合规则的结果, 是否删除?', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
                     axios.delete(
-                        '/result/' + result_id,
+                        '/results/' + this.$route.params.project_id + '?type=' + type,
                     ).then(() => {
                         this.$message.success({
                             message: "成功删除"
                         });
                         this.fetch_error_link_data();
+                        this.fetch_error_word_data();
                     }).catch(() => {
                         this.$message.error({
                             message: "删除失败，请检查网络"
@@ -407,14 +527,30 @@
                     });
                 });
             },
+            delete_result(result_id) {
+                this.$confirm('此操作将删除记录, 是否删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete(
+                        '/result/' + result_id,
+                    ).then(() => {
+                        this.$message.success({
+                            message: "成功删除"
+                        });
+                        this.fetch_error_link_data();
+                        this.fetch_error_word_data();
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "删除失败，请检查网络"
+                        });
+                    });
 
-            fetch_lexicon_data() {//获取政府词库列表
-                axios.get('/gov_lexicon').then((response) => {
-                    this.gov_lexicon_data = response.data;
-                }).catch((response) => {
-                    console.log(response);
-                    this.$message.error({
-                        message: "获取政府词库列表失败啦，检查下你的网络吧"
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
                     });
                 });
             },

@@ -12,6 +12,7 @@
 import inspect
 import logging
 import pkgutil
+import random
 import sys
 import time
 import traceback
@@ -25,6 +26,7 @@ from jinja2 import Template
 from scrapy import Spider
 
 from PyScraper.settings import SCRIPT_TEMPLATES_DIR, GOV_SPIDER_DIR, GOV_SPIDER_MODULE
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -156,11 +158,15 @@ def create_gov_script(spider_name, start_url):
     result = script_template.render(spider_name=spider_name, start_url=start_url,
                                     allowed_domain=allowed_domain, datetime=timestamp)
     today = str(datetime.today().date())
-    path = join(GOV_SPIDER_DIR, today + "_{spider_name}.py".format(spider_name=spider_name))
+    three_random_letter = random.choice(string.ascii_letters) + random.choice(string.ascii_letters) + random.choice(
+        string.ascii_letters)
+    path = join(GOV_SPIDER_DIR, today + "_{three_random_letter}".format(three_random_letter=three_random_letter) + "_{spider_name}.py".format(spider_name=spider_name))
     with open(path, 'w+') as f:
         f.write(result)
-    spider_modulename = GOV_SPIDER_MODULE + ".{today}_{spider_name}.{spider_name}Spider".format(today=today,
-                                                                                                spider_name=spider_name)
+
+    spider_modulename = GOV_SPIDER_MODULE + ".{today}_{three_random_letter}_{spider_name}.{spider_name}Spider".format(
+        today=today,
+        three_random_letter=three_random_letter, spider_name=spider_name)
     return spider_modulename
 
 

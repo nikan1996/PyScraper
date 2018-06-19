@@ -1,7 +1,7 @@
 <template>
     <div id="projects">
         <!--<router-link to="/create_project">-->
-            <!--<el-button type="primary">新建项目</el-button>-->
+        <!--<el-button type="primary">新建项目</el-button>-->
         <!--</router-link>-->
         <router-link to="/create_gov_project">
             <el-button type="primary">新建政府项目</el-button>
@@ -28,12 +28,13 @@
                         >开始
                         </el-button>
                         <!--<el-button type="primary" size="small" @click="pause(scope.row)"-->
-                                   <!--:disabled="scope.row.status == '暂停'||scope.row.status == '停止'">暂停-->
+                        <!--:disabled="scope.row.status == '暂停'||scope.row.status == '停止'">暂停-->
                         <!--</el-button>-->
                         <el-button type="primary" size="small" @click="stop(scope.row)"
                                    :disabled="scope.row.status == '停止'">停止
                         </el-button>
-                        <el-button type="primary" size="small" @click="delete_project(scope.row)">删除
+                        <el-button type="primary" size="small" @click="delete_project(scope.row)"
+                                   :disabled="scope.row.status == '运行'">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -50,11 +51,13 @@
     import axios from 'axios';
 
     function sortByKey(array, key) {
-    return array.sort(function(a, b) {
-        let x = a[key]; let y = b[key];
-        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-    });
-}
+        return array.sort(function (a, b) {
+            let x = a[key];
+            let y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
+
     export default {
         name: "Projects",
         created() {
@@ -174,7 +177,7 @@
                 });
 //                 setTimeout(this.fetchData(), 1000);
             },
-            delete_project(row){
+            delete_project(row) {
                 let project_id = row.project_id;
                 this.$confirm('此操作将删除项目, 是否删除?', '提示', {
                     confirmButtonText: '确定',

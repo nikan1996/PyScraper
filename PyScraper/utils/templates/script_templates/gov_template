@@ -56,7 +56,9 @@ class {{spider_name}}Spider(Spider):
             print("error_correction_result", error_correction_result)
 
             message = "\n".join(["正确词：{} 错误词： {}".format(error['correct'], error['error']) for error in error_correction_result])
-            yield {'type': 'error_word', 'reason': '网页中有错误词:\n' + message, 'url': request_url or response.url, 'content': response.text, 'error': error_correction_result}
+            for error in error_correction_result:
+                yield {'type': 'error_word', 'reason': '检查出错误词', 'url': request_url or response.url, 'content': response.text, 'error': error}
+
 
 
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]

@@ -21,7 +21,7 @@ class ErrorCorrectionExtractor:
     """
     政府网站纠错解析器
     """
-    wildcard_mapping = {'?': '[\s\S]{1}', '*': '[\s\S]+?'}
+    wildcard_mapping = {'?': '[\u4E00-\u9FA5]{1}', '*': '[\u4E00-\u9FA5]+?'}
     
     def __init__(self, domain: str):
         

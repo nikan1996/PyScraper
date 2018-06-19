@@ -44,6 +44,15 @@ class ResultHandler:
         db.session.commit()
         return result_id
     
+    def deletes(self, project_id, type):
+        result = Result.query.filter_by(project_id=project_id).all()
+        filter_result = [one for one in result if one.result.get('type') == type]
+        logger.info(filter_result)
+        for r in filter_result:
+            db.session.delete(r)
+        db.session.commit()
+        return {'project_id': project_id, 'type': type}
+    
     def get_gov_error_word(self, project_id):
         all = Result.query.filter_by(project_id=project_id).order_by(
             Result.update_timestamp.desc()).all()
