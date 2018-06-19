@@ -7,7 +7,7 @@ import New_project from './components/project/new_project.vue'
 import New_gov_project from './components/project/new_gov_project.vue'
 import Project from './components/project/project_detail.vue'
 import Gov_lexicon from './components/gov_lexicon.vue'
-
+import code_location from './components/project/location.vue'
 Vue.use(VueRouter);
 
 
@@ -48,7 +48,13 @@ const routes = [
     {
         path: '/gov_lexicon',
         component: Gov_lexicon
-    }
+    },
+
+    {
+        path: '/location/:result_id',
+        component: code_location,
+        props: true,
+    },
 ];
 
 // 创建 router 实例，然后传 `routes` 配置

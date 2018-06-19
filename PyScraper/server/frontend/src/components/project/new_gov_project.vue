@@ -21,10 +21,6 @@
                 <el-form-item label="标签" prop="tag">
                     <el-input v-model="gov_projectForm.tag"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱" prop="setting.information_config.email">
-                    <el-input v-model="gov_projectForm.setting.information_config.email"></el-input>
-                    <el-tag type="info">(有错误的网站会发到邮箱通知)</el-tag>
-                </el-form-item>
                 <el-form-item>
                     <el-button style="margin-top: 12px;" @click="next_step">下一步</el-button>
                     <el-button @click="resetForm('gov_projectForm')">重置</el-button>
@@ -44,7 +40,7 @@
                     <el-form-item label="正确词" :rules="{
       required: true, message: '值不能为空', trigger: 'blur'
     }" :prop="'setting.rules.' + index + '.1'">
-                        <el-input v-model="rule[1]"></el-input>
+                         <el-input v-model="rule[1]"></el-input>
                     </el-form-item>
                     <el-button @click.prevent="removeRule(rule)">删除</el-button>
                 </div>
@@ -102,9 +98,6 @@
                         start_url: [{required: true, message: '请输入起始网址', trigger: 'blur'},
                             { type: 'url', message: '网址需要以http开头'}
                         ],
-                        information_config: {
-                            email: {required: true, message: '请输入邮箱', trigger: 'blur'}
-                        }
                     }
                 }
             };

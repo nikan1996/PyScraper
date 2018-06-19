@@ -12,6 +12,7 @@
 import inspect
 import logging
 import pkgutil
+import random
 import sys
 import time
 import traceback
@@ -25,6 +26,7 @@ from jinja2 import Template
 from scrapy import Spider
 
 from PyScraper.settings import SCRIPT_TEMPLATES_DIR, GOV_SPIDER_DIR, GOV_SPIDER_MODULE
+import string
 
 logger = logging.getLogger(__name__)
 
@@ -130,12 +132,12 @@ def get_full_classname(klass):
     return klass.__module__ + "." + klass.__qualname__
 
 
-def create_script(*, script_name, rules, start_url, mail_to, script_type=None):
+def create_script(*, script_name, start_url, mail_to, script_type=None):
     if script_type == 'gov':
-        return create_gov_script(script_name, rules, start_url, mail_to)
+        return create_gov_script(script_name, start_url)
 
 
-def create_gov_script(spider_name, rules, start_url, mail_to):
+def create_gov_script(spider_name, start_url):
     """
     to create a new government script
     :param spider_name: the spider name
@@ -144,7 +146,7 @@ def create_gov_script(spider_name, rules, start_url, mail_to):
     :param mail_to: mail receiver when rule error occurs
     :return: new government script path
     """
-    if not spider_name or not start_url or not mail_to:
+    if not spider_name or not start_url:
         raise Exception("parameters should not be None")
     if not start_url.startswith("http"):
         start_url = "http://" + start_url
@@ -153,13 +155,20 @@ def create_gov_script(spider_name, rules, start_url, mail_to):
     
     with open(SCRIPT_TEMPLATES_DIR + '/gov_template', 'r') as f:
         script_template = Template(f.read())
-    result = script_template.render(spider_name=spider_name, rules=rules, start_url=start_url,
-                                    allowed_domain=allowed_domain,
-                                    mail_to=mail_to, datetime=timestamp)
+    result = script_template.render(spider_name=spider_name, start_url=start_url,
+                                    allowed_domain=allowed_domain, datetime=timestamp)
     today = str(datetime.today().date())
-    path = join(GOV_SPIDER_DIR, today + "_{spider_name}.py".format(spider_name=spider_name))
+    three_random_letter = random.choice(string.ascii_letters) + random.choice(string.ascii_letters) + random.choice(
+        string.ascii_letters)
+    path = join(GOV_SPIDER_DIR, today + "_{three_random_letter}".format(three_random_letter=three_random_letter) + "_{spider_name}.py".format(spider_name=spider_name))
     with open(path, 'w+') as f:
         f.write(result)
-    spider_modulename = GOV_SPIDER_MODULE + ".{today}_{spider_name}.{spider_name}Spider".format(today=today,
-                                                                                                spider_name=spider_name)
+
+    spider_modulename = GOV_SPIDER_MODULE + ".{today}_{three_random_letter}_{spider_name}.{spider_name}Spider".format(
+        today=today,
+        three_random_letter=three_random_letter, spider_name=spider_name)
     return spider_modulename
+
+
+def convert_module_name2path(module_name):
+    return sys.modules[module_name].__file__

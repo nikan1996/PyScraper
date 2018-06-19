@@ -34,7 +34,7 @@ class HtmlLinkExtractor(LxmlLinkExtractor):
         return [link for link in links if self.is_not_exclude_link(link)]
     
     def is_not_exclude_link(self, link: Link):
-        exclude_prefix_list = [".doc", ".pdf",]
+        exclude_prefix_list = []
         for exclude_prefix in exclude_prefix_list:
             if exclude_prefix in link.url:
                 return False

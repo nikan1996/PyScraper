@@ -12,7 +12,7 @@ except ImportError:
 
 class AddSlotTest(unittest.TestCase):
 
-    @mock.patch('crawl_engine.extensions.addslot.Slot')
+    @mock.patch('PyScraper.extensions.addslot.Slot')
     def test_add_slot(self, mock_slot):
         settings = {
             'SPIDER_CLOSE_DELAY': 10,

@@ -25,7 +25,8 @@ class GovLexiconHandler:
         return convert_query_result2dict(all)
     
     def create_gov_rule(self, pattern, correct_word, domain):
-        domain = urlparse(domain).netloc
+        if domain.startswith('http'):
+            domain = urlparse(domain).netloc
         rule = GovLexicon(pattern=pattern, correct_word=correct_word, domain=domain)
         db.session.add(rule)
         db.session.commit()

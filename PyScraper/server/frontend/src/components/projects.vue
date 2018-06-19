@@ -1,13 +1,10 @@
 <template>
     <div id="projects">
         <!--<router-link to="/create_project">-->
-            <!--<el-button type="primary">新建项目</el-button>-->
+        <!--<el-button type="primary">新建项目</el-button>-->
         <!--</router-link>-->
         <router-link to="/create_gov_project">
             <el-button type="primary">新建政府项目</el-button>
-        </router-link>
-        <router-link to="/gov_lexicon">
-            <el-button type="primary">政府关键词库</el-button>
         </router-link>
         <div v-cloak>
             <el-table :data="show_projects.slice((currentPage-1)*pagesize,currentPage*pagesize)" stripe
@@ -25,16 +22,19 @@
                         width="400">
                     <template slot-scope="scope">
                         <el-button type="primary" size="small" @click="see(scope.row)">查看</el-button>
-                        <el-button type="primary" size="small" @click="edit(scope.row)">编辑</el-button>
+                        <!--<el-button type="primary" size="small" @click="edit(scope.row)">编辑</el-button>-->
                         <el-button type="primary" size="small" @click="start(scope.row)"
                                    :disabled="scope.row.status == '运行'"
                         >开始
                         </el-button>
-                        <el-button type="primary" size="small" @click="pause(scope.row)"
-                                   :disabled="scope.row.status == '暂停'||scope.row.status == '停止'">暂停
-                        </el-button>
+                        <!--<el-button type="primary" size="small" @click="pause(scope.row)"-->
+                        <!--:disabled="scope.row.status == '暂停'||scope.row.status == '停止'">暂停-->
+                        <!--</el-button>-->
                         <el-button type="primary" size="small" @click="stop(scope.row)"
                                    :disabled="scope.row.status == '停止'">停止
+                        </el-button>
+                        <el-button type="primary" size="small" @click="delete_project(scope.row)"
+                                   :disabled="scope.row.status == '运行'">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -51,11 +51,13 @@
     import axios from 'axios';
 
     function sortByKey(array, key) {
-    return array.sort(function(a, b) {
-        let x = a[key]; let y = b[key];
-        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
-    });
-}
+        return array.sort(function (a, b) {
+            let x = a[key];
+            let y = b[key];
+            return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+        });
+    }
+
     export default {
         name: "Projects",
         created() {
@@ -175,36 +177,32 @@
                 });
 //                 setTimeout(this.fetchData(), 1000);
             },
-            pause(row) {
-                console.log(row);
-                axios.put(
-                    '/project_action/' + row.project_id,
-                    JSON.stringify({'action': 'pause'}),
-                    {
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    }
-                ).then(() => {
-                    let self = this;
-                    setTimeout(
-                        function () {
-                            self.fetchData()
-                            self.$message.success({
-                                message: "暂停项目成功"
-                            });
-                        },
-                        1000
-                    )
-
-
-                }).catch(() => {
-                    this.$message.error({
-                        message: "暂停项目失败请检查网络设置"
+            delete_project(row) {
+                let project_id = row.project_id;
+                this.$confirm('此操作将删除项目, 是否删除?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.delete(
+                        '/project/' + project_id,
+                    ).then(() => {
+                        this.$message.success({
+                            message: "成功删除"
+                        });
+                        this.fetchData();
+                    }).catch(() => {
+                        this.$message.error({
+                            message: "删除失败，请检查网络"
+                        });
                     });
 
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
                 });
-//                 setTimeout(this.fetchData(), 1000);
             },
             handleSizeChange(val) {
                 this.pagesize = val;
