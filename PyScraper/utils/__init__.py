@@ -130,12 +130,12 @@ def get_full_classname(klass):
     return klass.__module__ + "." + klass.__qualname__
 
 
-def create_script(*, script_name, rules, start_url, mail_to, script_type=None):
+def create_script(*, script_name, start_url, mail_to, script_type=None):
     if script_type == 'gov':
-        return create_gov_script(script_name, rules, start_url)
+        return create_gov_script(script_name, start_url)
 
 
-def create_gov_script(spider_name, rules, start_url):
+def create_gov_script(spider_name, start_url):
     """
     to create a new government script
     :param spider_name: the spider name
@@ -153,7 +153,7 @@ def create_gov_script(spider_name, rules, start_url):
     
     with open(SCRIPT_TEMPLATES_DIR + '/gov_template', 'r') as f:
         script_template = Template(f.read())
-    result = script_template.render(spider_name=spider_name, rules=rules, start_url=start_url,
+    result = script_template.render(spider_name=spider_name, start_url=start_url,
                                     allowed_domain=allowed_domain, datetime=timestamp)
     today = str(datetime.today().date())
     path = join(GOV_SPIDER_DIR, today + "_{spider_name}.py".format(spider_name=spider_name))

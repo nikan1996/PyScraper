@@ -14,7 +14,7 @@ from scrapy.http import TextResponse
 from PyScraper.server.app import create_app_forcontext
 from PyScraper.server.resource_handlers.task_handler import TaskHandler
 import logging
-
+import cchardet as chardet
 logger = logging.getLogger(__name__)
 
 
@@ -34,11 +34,18 @@ class TaskMiddleware:
         url = request.url
         status = response.status
         content = response.text
-        try:
-            with self.app.app_context():
-                self.task_handler.put_newtask(project_id=self.project_id, content=content, url=url, status_code=status)
-        except Exception as e:
-            logger.error(str(e))
+
+        codings = chardet.detect(response.body)
+        if codings and codings.get('encoding'):
+            try:
+                with self.app.app_context():
+                    self.task_handler.put_newtask(project_id=self.project_id, content=content, url=url, status_code=status)
+            except Exception as e:
+                logger.error(str(e))
+                logger.error(response.encoding)
+                logging.error(response.body[:200])
+                logger.error(response.url)
+
         return response
     
     def process_exception(self, request, exception, spider):

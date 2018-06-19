@@ -21,13 +21,12 @@ class ErrorCorrectionExtractor:
     """
     政府网站纠错解析器
     """
-    wildcard_mapping = {'*': '[\s\S]+?', '?': '[\s\S]{1}'}
+    wildcard_mapping = {'?': '[\s\S]{1}', '*': '[\s\S]+?'}
     
-    def __init__(self, pairs: List[(Tuple or List)[str, str]], domain: str):
-        pairs = self.to_safe(pairs)
+    def __init__(self, domain: str):
         
         global_pairs = self.to_safe(self.get_global_pairs(domain=domain))
-        self.compiled_pairs = self.compile_pairs(pairs + global_pairs)
+        self.compiled_pairs = self.compile_pairs(global_pairs)
         
         self.has_error_urls = set()
     
@@ -38,6 +37,7 @@ class ErrorCorrectionExtractor:
         for compiled_pair in self.compiled_pairs:
             pattern, correct_str = compiled_pair
             complete_list = pattern.findall(content)
+            complete_list = [x for x in complete_list if len(x) == len(correct_str)]  # 模糊匹配的长度保持一致
             error_list = [{'correct': correct_str, 'error': one} for one in complete_list if one != correct_str]
         
         if error_list and response.url not in self.has_error_urls:

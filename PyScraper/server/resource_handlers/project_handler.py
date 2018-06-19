@@ -8,12 +8,16 @@
 
 @time: 2018/5/28 下午2:12
 """
+from urllib.parse import urlparse
+
 from PyScraper.server.extensions import db
 from PyScraper.server.extensions import spidercls_queue
 from PyScraper.server.models.base import convert_query_result2dict
 from PyScraper.server.models.project import Project
+from PyScraper.server.resource_handlers.gov_lexicon_handler import GovLexiconHandler
 from PyScraper.utils import create_script
-
+import logging
+logger = logging.getLogger(__name__)
 
 class ProjectHandler:
     def get_all_projects(self):
@@ -25,11 +29,15 @@ class ProjectHandler:
             spider_name = setting.get('spider_name')
             if spider_name[0].isdigit():
                 spider_name = 'a' + spider_name
-            rules = setting.get('rules')
+            
             start_url = setting.get('start_url')
+            rules = setting.get('rules')
+            rules = [[rule[0], rule[1], start_url] for rule in rules]
+            if rules is not None:
+                GovLexiconHandler().create_gov_rules(rules)
             mail_to = setting.get('information_config').get('email')
             script_type = setting.get('script_type')
-            spidercls = create_script(script_name=spider_name, rules=rules, start_url=start_url, mail_to=mail_to,
+            spidercls = create_script(script_name=spider_name, start_url=start_url, mail_to=mail_to,
                                       script_type=script_type)
             setting['spidercls'] = spidercls
         project = Project(project_name=project_name, setting=setting, cron_config=cron_config, tag=tag)

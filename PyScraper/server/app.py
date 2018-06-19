@@ -22,8 +22,9 @@ from sqlalchemy_utils import database_exists, create_database
 from PyScraper.server.extensions import db, spidercls_queue, auth
 from PyScraper.server.resources.database import Databases, Database
 from PyScraper.server.resources.gov_lexicon import GovLexicon, GovRule
+from PyScraper.server.resources.location import Location
 from PyScraper.server.resources.project import Projects, Project, ProjectAction
-from PyScraper.server.resources.result import Result
+from PyScraper.server.resources.result import Results, Result
 from PyScraper.server.resources.spider import Spiders
 from PyScraper.server.resources.statistics import Statistics
 from PyScraper.server.resources.task import Task
@@ -113,7 +114,9 @@ def configure_api(app):
     api.add_resource(Project, '/project/<int:project_id>')
     api.add_resource(ProjectAction, '/project_action/<int:project_id>')
     api.add_resource(Task, '/task/<int:project_id>')
-    api.add_resource(Result, '/result/<int:project_id>')
+    api.add_resource(Results, '/results/<int:project_id>')
+    api.add_resource(Result, '/result/<int:result_id>')
+    api.add_resource(Location, '/location/<int:result_id>')
     
     api.add_resource(Databases, '/databases')
     api.add_resource(Database, '/database/<int:database_id>')

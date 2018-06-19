@@ -40,7 +40,7 @@
                     <el-form-item label="正确词" :rules="{
       required: true, message: '值不能为空', trigger: 'blur'
     }" :prop="'setting.rules.' + index + '.1'">
-                        <el-input v-model="rule[1]"></el-input>
+                         <el-input v-model="rule[1]"></el-input>
                     </el-form-item>
                     <el-button @click.prevent="removeRule(rule)">删除</el-button>
                 </div>

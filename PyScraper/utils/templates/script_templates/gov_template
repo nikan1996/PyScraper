@@ -9,7 +9,7 @@
 @time: {{datetime}}
 """
 from typing import List
-
+import re
 from scrapy import Request
 from scrapy.crawler import CrawlerProcess
 from scrapy.http import TextResponse
@@ -29,28 +29,26 @@ class {{spider_name}}Spider(Spider):
     name = '{{spider_name}}'
     allowed_domains = ['{{allowed_domain}}']
     start_urls = ['{{start_url}}']
-    rules = [
-    {% for rule in rules -%}
-    {{rule}},
-    {% endfor -%}
-
-    ]
     htmk_link_extractor = HtmlLinkExtractor()
-    error_correction_extractor = ErrorCorrectionExtractor(rules, domain='{{allowed_domain}}')
+    error_correction_extractor = ErrorCorrectionExtractor(domain='{{allowed_domain}}')
     blank_html_extractor = BlankHtmlExtractor()
     custom_settings = {
     # 'CONCURRENT_REQUESTS_PER_DOMAIN' : 4,
-    'LOG_LEVEL': 'INFO'
+    'LOG_LEVEL': 'INFO',
+    'DOWNLOAD_MAXSIZE': 273741,
     # 'DOWNLOAD_DELAY': 0.3,
     }
 
     def parse(self, response: TextResponse):
         request_url = response.meta.get("url")
         previous_url = response.meta.get("previous_url")
+        previous_content = response.meta.get("previous_content")
         response_is_blank = self.blank_html_extractor.is_blank(response)
-        if response_is_blank:
-            blank_result = {'type': 'error_link', 'reason': '网页内容为空', 'url': request_url or response.url, 'content': response.text,  "previous_url": previous_url, , 'status': 200}
-            yield blank_result
+        for sufix in ['.html', '.htm', '.jsp', '.asp']:
+            if sufix in response.url:
+                if response_is_blank:
+                    blank_result = {'type': 'error_link', 'reason': '网页内容为空', 'url': request_url or response.url, 'content': response.text,  "previous_url": previous_url, 'status': 200, "previous_content": previous_content}
+                    yield blank_result
 
 
         error_correction_result = self.error_correction_extractor.find_error(response)
@@ -64,20 +62,29 @@ class {{spider_name}}Spider(Spider):
         links: List[Link] = [lnk for lnk in self.htmk_link_extractor.extract_links(response)]
         for link in links:
             yield Request(link.url, callback=self.parse, errback=self.errorback,
-                            meta={"url": link.url, "previous_url": previous_url})
+                            meta={"url": link.url, "previous_url": response.url, "previous_content": response.text})
         """
         获取dataproxy接口的链接
         """
         data_proxy_extractor = DataProxyXmlLinkExtractor()
         if data_proxy_extractor.has_dataproxy_link(response):
             yield data_proxy_extractor.gen_dataproxy_links()
+        """
+        获取urls[i]='/art/2018/3/7/art_1220133_15759129.html'形式的链接
+        """
+        urls = [response.urljoin(url) for url in re.findall("urls\[i\]='(.+?)'", response.text)]
+        for url in urls:
+            yield Request(url, callback=self.parse, errback=self.errorback,
+                            meta={"url": url, "previous_url": response.url, "previous_content": response.text})
+
 
     def errorback(self, failure):
         if isinstance(failure.value, HttpError):
             response = failure.value.response
             request_url = response.meta.get("url")
             previous_url = response.meta.get("previous_url")
-            result = {'type': 'error_link', 'reason': '错误链接{}'.format(response.status), 'status': response.status, 'url': request_url or response.url, 'content': None,  "previous_url": previous_url}
+            previous_content = response.meta.get("previous_content")
+            result = {'type': 'error_link', 'reason': '错误链接{}'.format(response.status), 'status': response.status, 'url': request_url or response.url, 'content': None,  "previous_url": previous_url,  "previous_content": previous_content}
             yield result
 
 

@@ -1,9 +1,8 @@
 <template>
     <div id="database">
-        <el-tabs id='eltabs' type="card" v-model="activeName">
             <el-tab-pane label="政府关键词库" name="gov_lexicon">
                 <el-table id='lexicontable'
-                          :data="gov_lexicon_data.slice((currentPage-1)*pagesize,currentPage*pagesize)" stripe
+                          :data="gov_lexicon_data.slice((lexicon_currentPage-1)*lexicon_pagesize,lexicon_currentPage*lexicon_pagesize)" stripe
                           style="width: 100%;"
                           :default-sort="{prop: 'update_timestamp', order: 'descending'}"
                 >
@@ -26,15 +25,15 @@
                 </el-table>
                 <div id="letPaginationBottom"></div>
                 <el-pagination id="ele_pagination" @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                               :current-page="currentPage" :page-sizes="[5, 9, 10]" :page-size="pagesize"
-                               layout="total, sizes, prev, pager, next, jumper" :total="total">
+                               :current-page="lexicon_currentPage" :page-sizes="[5, 9, 10]" :page-size="lexicon_pagesize"
+                               layout="lexicon_total, sizes, prev, pager, next, jumper" :lexicon_total="lexicon_total">
                 </el-pagination>
             </el-tab-pane>
             <el-tab-pane>
                 <span slot="label"><i class="el-icon-circle-plus-outline"></i>添加规则</span>
                 <el-form :inline="true" :model="gov_rule_form" ref="gov_rule_form">
 
-                    <el-tag type="success" style="margin:10px">示例： 匹配词：温*市 正确词：温州市 网站地址: http://wzkj.wenzhou.gov.cn/
+                    <el-tag type="success" style="margin:10px">示例： 匹配词：中*国 正确词：中华人民共和国
                     </el-tag>
                     <div v-for="(gov_rule, index) in gov_rule_form.gov_rules">
                         <el-form-item label="匹配词" :rules="{
@@ -55,15 +54,12 @@
                         <el-button @click.prevent="removeRule(gov_rule)">删除</el-button>
                     </div>
                     <el-button @click.prevent="addRule">新增规则</el-button>
-                    <el-button type="primary" style="margin-top: 12px;" @click="submitForm('gov_rule_form')">立即添加
+                    <el-button type="primary" style="margin-top: 12px;" @click="lexicon_submitForm('gov_rule_form')">立即添加
                     </el-button>
 
 
                 </el-form>
             </el-tab-pane>
-
-        </el-tabs>
-
     </div>
 </template>
 <script>
@@ -72,7 +68,7 @@
     export default {
         name: "Gov_lexicon",
         created() {
-            this.fetchData();
+            this.fetch_lexicon_data();
         },
         data() {
             return {
@@ -81,18 +77,19 @@
 
                 gov_rule_form: {gov_rules: [['', '', '']]},
 
-                currentPage: 1,
-                pagesize: 9,
+                lexicon_currentPage: 1,
+                lexicon_pagesize: 9,
             };
         },
         computed: {
-            total: function () {
+            lexicon_total: function () {
                 return this.gov_lexicon_data.length
             },
 
+
         },
         methods: {
-            fetchData() {//获取政府词库列表
+            fetch_lexicon_data() {//获取政府词库列表
                 axios.get('/gov_lexicon').then((response) => {
                     this.gov_lexicon_data = response.data;
                 }).catch((response) => {
@@ -102,7 +99,7 @@
                     });
                 });
             },
-            submitForm(formName) {
+            lexicon_submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         axios.put(
@@ -118,7 +115,7 @@
                                 message: "成功添加规则至词库"
                             });
                             this.resetForm(formName);
-                            this.fetchData();
+                            this.fetch_lexicon_data();
                         }).catch(() => {
                             this.$message.error({
                                 message: "添加规则失败啦"
@@ -140,11 +137,11 @@
 
 
             handleSizeChange(val) {
-                this.pagesize = val;
+                this.lexicon_pagesize = val;
                 console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
-                this.currentPage = val;
+                this.lexicon_currentPage = val;
                 console.log(`当前页: ${val}`);
             },
             removeRule(item) {
@@ -169,7 +166,7 @@
                     this.$message.success({
                         message: "成功删除规则"
                     });
-                    this.fetchData();
+                    this.fetch_lexicon_data();
                 }).catch(() => {
                     this.$message.error({
                         message: "删除规则失败，请检查网络"
