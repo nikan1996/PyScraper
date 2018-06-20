@@ -15,7 +15,7 @@ import traceback
 from os import path
 
 import sqlalchemy
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from flask_restful import Api
 from sqlalchemy_utils import database_exists, create_database
 
@@ -34,18 +34,26 @@ logger = logging.getLogger(__name__)
 
 
 def create_app_forcontext(config='PyScraper.config.Config'):
+    static_dir = path.join(path.dirname(path.abspath(__file__)), 'static')
+    # print(static_dir)
+
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
-    app = Flask("PyScraper", template_folder=tmpl_dir)
+    app = Flask("PyScraper", static_folder=static_dir, template_folder=tmpl_dir)
+    print(app.static_folder)
+
     app.config.from_object(config)
     init_db(app)
-
+    
     init_app_callbacks(app)
     return app
 
 
 def create_app(config='PyScraper.config.Config'):
+    static_dir = path.join(path.dirname(path.abspath(__file__)), 'static')
+    # print(static_dir)
+
     tmpl_dir = path.join(path.dirname(path.abspath(__file__)), 'templates')
-    app = Flask("PyScraper", template_folder=tmpl_dir)
+    app = Flask("PyScraper", static_folder=static_dir, template_folder=tmpl_dir)
     app.config.from_object(config)
     configure_logging(app)
     configure_api(app)
@@ -92,12 +100,16 @@ def init_app_callbacks(app):
 
 def configure_api(app):
     api = Api(app)
-
+    
     @app.route('/')
     @auth.login_required
     def index():
-        return "Hello, %s!" % auth.username()
-
+        return render_template('index.html')
+    
+    @app.route('/debug')
+    def debug():
+        return render_template('debug.html')
+    
     @app.route("/healthz")
     def health():
         return "ready to go!\n", 200
@@ -128,6 +140,7 @@ def configure_api(app):
     
     api.add_resource(Statistics, '/statistics')
 
+
 def configure_logging(app):
     config_file = '{project_path}/logger.json'
     project_path = path.join(path.dirname(path.abspath(__file__)))
@@ -139,7 +152,6 @@ def configure_logging(app):
     # patch app logger
     for handler in logging.getLogger('').handlers:
         app.logger.addHandler(handler)
-
 
 def configure_errorhandler(app):
     @app.errorhandler(404)
