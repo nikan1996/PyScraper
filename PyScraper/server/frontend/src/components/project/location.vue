@@ -42,7 +42,8 @@
         computed: {},
         methods: {
             fetch_code_location() {
-                axios.get('/location/' + this.result_id + '?type=' + this.$route.query.type).then((response) => {
+                let url = this.$route.fullPath;
+                axios.get(url).then((response) => {
                     console.log(response.data);
                     this.location_data = response.data;
                 }).catch((response) => {

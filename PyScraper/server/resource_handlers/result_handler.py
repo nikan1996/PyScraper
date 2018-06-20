@@ -135,13 +135,41 @@ class ResultHandler:
         content = r.text
         
         return self.grounding_sourcecode(content, url, previous_url)
+
+    def grounding_sourcecode_realtime_error_word(self, result_id, error_word):
+        """
+        渲染页面，
+        标红错误词
+        :param result_id:
+        :return:
+        """
+        result_item = Result.query.filter_by(result_id=result_id).first()
+        result = result_item.result
+    
+        url = result['url']
+    
+        r = requests.get(url)
+    
+        codings = chardet.detect(r.content)
+        if codings and codings.get('encoding'):
+            r.encoding = codings['encoding']
+        content = r.text
+
+        head = content
+        body = ''
+        foot = ''
+        if error_word in content:
+            head, foot = content.split(error_word, maxsplit=1)
+            body = "<strong style='color: red'>" + error_word + "</strong>"
+            
+        return {'previous_url': url, 'content': content, 'head': head, 'body': body, 'foot': foot}
     
     def grounding_sourcecode(self, content, url, previous_url):
         head = content
         body = ''
         foot = ''
         if url in content:
-            head, foot = content.split(url)
+            head, foot = content.split(url, 1)
             body = "<strong style='color: red'>" + url + "</strong>"
         else:
             url = '/' + url.split('/', 3)[3]
