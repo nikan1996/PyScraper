@@ -2,7 +2,7 @@
     <div id="project_detail">
         <el-tabs type="card" v-model="activeName">
             <el-tab-pane label="已爬取网站列表" name="task">
-                <el-table id='tasktable'
+                <el-table class='fix_height_table'
                           :data="computed_task"
                           stripe
                           style="width: 100%;"
@@ -35,7 +35,8 @@
             <el-tab-pane label="不符合规则的结果" name="error_word">
                 <el-tag>检索结果仅代表不匹配结果（也有可能语义在上下文中是正确的，请继续人工筛选）</el-tag>
                 <template>
-                    <el-select v-model="select_lexicon_correct_word" clearable placeholder="请选择正确词" @change="update_computed_error_word">
+                    <el-select v-model="select_lexicon_correct_word" clearable placeholder="请选择正确词"
+                               @change="update_computed_error_word">
                         <el-option
                                 v-for="item in project_lexicon_data"
                                 :key="item.rule_id"
@@ -47,7 +48,7 @@
                     </el-select>
                 </template>
 
-                <el-table id='error_word_table'
+                <el-table class='fix_height_table'
                           :data="computed_error_word.slice((error_word_currentPage-1)*error_word_pagesize,error_word_currentPage*error_word_pagesize)"
                           stripe
                           style="width: 100%;">
@@ -56,7 +57,7 @@
                             width="50"
                             label="序号">
                     </el-table-column>
-                    <el-table-column label="网址" width="600">
+                    <el-table-column label="网址" width="500">
                         <template slot-scope="scope">
                             <el-popover trigger="hover" placement="bottom-start" width="400">
                                 <p class="popword">{{scope.row.full_url}}</p>
@@ -75,18 +76,24 @@
                     <el-table-column
                             fixed="right"
                             label="分析"
-                            width="100">
+                            width="200">
                         <template slot-scope="scope">
+                            <a target="_blank"
+                               :href="'/location/' + scope.row.result_id + '?type=real&error_word=' + scope.row.error_word">
+                                <el-button type="primary" size="small">实时定位
+                                </el-button>
+                            </a>
                             <el-button type="primary" size="small" @click="delete_result(scope.row.result_id)">已解决
                             </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-pagination @size-change="error_word_handleSizeChange"
-                               @current-change="error_word_handleCurrentChange"
-                               :current-page="error_word_currentPage" :page-sizes="[5, 9, 10]"
-                               :page-size="error_word_pagesize"
-                               layout="total, sizes, prev, pager, next, jumper" :total="error_word_total">
+                <el-pagination
+                        @size-change="error_word_handleSizeChange"
+                        @current-change="error_word_handleCurrentChange"
+                        :current-page="error_word_currentPage" :page-sizes="[5, 9, 10]"
+                        :page-size="error_word_pagesize"
+                        layout="total, sizes, prev, pager, next, jumper" :total="error_word_total">
                 </el-pagination>
 
                 <el-button type="primary" @click="delete_results('error_word')">删除全部</el-button>
@@ -94,7 +101,7 @@
             </el-tab-pane>
 
             <el-tab-pane label="错误链接列表" name="error_link">
-                <el-table id='resulttable'
+                <el-table id='resulttable' class='fix_height_table'
                           :data="computed_error_link.slice((error_link_currentPage-1)*error_link_pagesize,error_link_currentPage*error_link_pagesize)"
                           stripe
                           style="width: 100%;"
@@ -135,7 +142,6 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div></div>
                 <el-pagination @size-change="error_link_handleSizeChange"
                                @current-change="error_link_handleCurrentChange"
                                :current-page="error_link_currentPage" :page-sizes="[5, 9, 10]"
@@ -146,7 +152,7 @@
 
             </el-tab-pane>
             <el-tab-pane label="政府关键词库" name="gov_lexicon">
-                <el-table id='lexicontable'
+                <el-table id='lexicontable' class='fix_height_table'
                           :data="project_lexicon_data.slice((lexicon_currentPage-1)*lexicon_pagesize,lexicon_currentPage*lexicon_pagesize)"
                           stripe
                           style="width: 100%;"
@@ -348,7 +354,7 @@
                         update_timestamp: value.update_timestamp,
                     };
                     let show_word = this.current_correct_word_show;
-                    if((show_word !== 'all') && (show_word!== tmp_value.correct_word)){
+                    if ((show_word !== 'all') && (show_word !== tmp_value.correct_word)) {
                         continue;
                     }
                     tmp_list.push(tmp_value);
@@ -394,7 +400,7 @@
                 return tmp_lexicon_data;
             },
             task_total: function () {
-                return Number(this.task_data.total_count)
+                return Number(this.task_data.total_count) > 1000 ? 1000 : Number(this.task_data.total_count);
             },
             error_word_total: function () {
                 return Number(this.computed_error_word.length)
@@ -496,8 +502,9 @@
                 this.error_link_currentPage = val;
                 console.log(`当前页: ${val}`);
             },
-            update_computed_error_word(){
+            update_computed_error_word() {
                 this.current_correct_word_show = this.select_lexicon_correct_word;
+                this.error_word_currentPage = 1;
             },
             delete_results(type) {
                 console.log(type);
@@ -637,6 +644,11 @@
 <style scoped>
     .link {
         text-decoration: none;
+    }
+
+    .fix_height_table {
+        height: 70vh;
+        overflow: scroll;
     }
 
     .popword {

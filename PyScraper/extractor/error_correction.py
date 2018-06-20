@@ -8,13 +8,16 @@
 
 @time: 2018/5/24 下午12:45
 """
+import logging
 import re
-from typing import List, Pattern, Tuple
+from typing import List, Tuple
 
 from scrapy.http import TextResponse
 
 from PyScraper.server.app import create_app_forcontext
 from PyScraper.server.resource_handlers.gov_lexicon_handler import GovLexiconHandler
+
+logger = logging.getLogger(__name__)
 
 
 class ErrorCorrectionExtractor:
@@ -27,7 +30,6 @@ class ErrorCorrectionExtractor:
         
         global_pairs = self.to_safe(self.get_global_pairs(domain=domain))
         self.compiled_pairs = self.compile_pairs(global_pairs)
-        
         self.has_error_urls = set()
     
     def find_error(self, response: TextResponse):
@@ -38,7 +40,7 @@ class ErrorCorrectionExtractor:
             pattern, correct_str = compiled_pair
             complete_list = pattern.findall(content)
             complete_list = [x for x in complete_list if len(x) == len(correct_str)]  # 模糊匹配的长度保持一致
-            error_list = [{'correct': correct_str, 'error': one} for one in complete_list if one != correct_str]
+            error_list.extend([{'correct': correct_str, 'error': one} for one in complete_list if one != correct_str])
         
         if error_list and response.url not in self.has_error_urls:
             self.has_error_urls.add(response.url)
@@ -65,4 +67,7 @@ class ErrorCorrectionExtractor:
         pair eg.[("关于下达温州市201([\s\S]{1})年公益性科技计划项目", "关于下达温州市2017年公益性科技计划项目")]
         """
         pairs = self.convert_pairs(pairs)
+        print('规则...')
+        print(str(pairs))
+
         return [(re.compile(pair[0]), pair[1]) for pair in pairs]

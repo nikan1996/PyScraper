@@ -16,7 +16,7 @@ from PyScraper.server.models.task import Task
 
 class StatisticsHandler:
     def get_statistics(self):
-        project_num = Project.query.count()
+        project_num = Project.query.filter_by(is_deleted=0).count()
         running_project_num = Project.query.filter_by(status="running", is_deleted=0).count()
         all_result_num = Result.query.count()
         all_task_num = Task.query.count()
