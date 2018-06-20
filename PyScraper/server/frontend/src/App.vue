@@ -26,7 +26,7 @@
             </el-aside>
             <el-container id="elcontainer2">
 
-                <router-view></router-view>
+            <router-view id='header'></router-view>
             <el-footer height="20px">PyScraper Copyright ©nikan 859905874@qq.com</el-footer>
             </el-container>
 
@@ -50,15 +50,22 @@
 </script>
 
 <style>
-
-    .el-header {
-        background-color: #fff;
-        color: #333;
-        text-align: center;
-
-        padding-top: 20px;
+    /*左边部分*/
+    #elcontainer1 {
+        height: 100%;
     }
+    #elcontainer2{
+         /*height: 100vh;*/
+        /*overflow: scroll;*/
+    }
+    /*右边上部分*/
+    #header {
+        /*background-color: #42b983;*/;
+         /*height: 75vh;*/
 
+
+    }
+    /*右边下部分*/
     .el-footer {
         background-color: #42b983;
         color: #fff;
@@ -66,10 +73,11 @@
         font-size: 12px;
         line-height: 1.5;
         height: 20px;
-        position: absolute;
+        position: fixed;
         bottom: 0;
         left: 200px;
         right: 0px;
+
     }
 
     .el-aside {
@@ -88,9 +96,7 @@
 
     }
 
-    #elcontainer1 {
-        height: 100%;
-    }
+
 
     #elcontainer2 {
     }
@@ -99,10 +105,6 @@
         height: 100%;
     }
 
-
-    /*.el-container{*/
-    /*display: ;*/
-    /*}*/
 
     #app {
         font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;

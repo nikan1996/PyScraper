@@ -2,7 +2,7 @@
     <div id="project_detail">
         <el-tabs type="card" v-model="activeName">
             <el-tab-pane label="已爬取网站列表" name="task">
-                <el-table id='tasktable'
+                <el-table class='fix_height_table'
                           :data="computed_task"
                           stripe
                           style="width: 100%;"
@@ -48,7 +48,7 @@
                     </el-select>
                 </template>
 
-                <el-table id='error_word_table'
+                <el-table class='fix_height_table'
                           :data="computed_error_word.slice((error_word_currentPage-1)*error_word_pagesize,error_word_currentPage*error_word_pagesize)"
                           stripe
                           style="width: 100%;">
@@ -88,11 +88,12 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-pagination @size-change="error_word_handleSizeChange"
-                               @current-change="error_word_handleCurrentChange"
-                               :current-page="error_word_currentPage" :page-sizes="[5, 9, 10]"
-                               :page-size="error_word_pagesize"
-                               layout="total, sizes, prev, pager, next, jumper" :total="error_word_total">
+                <el-pagination
+                        @size-change="error_word_handleSizeChange"
+                        @current-change="error_word_handleCurrentChange"
+                        :current-page="error_word_currentPage" :page-sizes="[5, 9, 10]"
+                        :page-size="error_word_pagesize"
+                        layout="total, sizes, prev, pager, next, jumper" :total="error_word_total">
                 </el-pagination>
 
                 <el-button type="primary" @click="delete_results('error_word')">删除全部</el-button>
@@ -100,7 +101,7 @@
             </el-tab-pane>
 
             <el-tab-pane label="错误链接列表" name="error_link">
-                <el-table id='resulttable'
+                <el-table id='resulttable' class='fix_height_table'
                           :data="computed_error_link.slice((error_link_currentPage-1)*error_link_pagesize,error_link_currentPage*error_link_pagesize)"
                           stripe
                           style="width: 100%;"
@@ -141,7 +142,6 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <div></div>
                 <el-pagination @size-change="error_link_handleSizeChange"
                                @current-change="error_link_handleCurrentChange"
                                :current-page="error_link_currentPage" :page-sizes="[5, 9, 10]"
@@ -152,7 +152,7 @@
 
             </el-tab-pane>
             <el-tab-pane label="政府关键词库" name="gov_lexicon">
-                <el-table id='lexicontable'
+                <el-table id='lexicontable' class='fix_height_table'
                           :data="project_lexicon_data.slice((lexicon_currentPage-1)*lexicon_pagesize,lexicon_currentPage*lexicon_pagesize)"
                           stripe
                           style="width: 100%;"
@@ -504,6 +504,7 @@
             },
             update_computed_error_word() {
                 this.current_correct_word_show = this.select_lexicon_correct_word;
+                this.error_word_currentPage = 1;
             },
             delete_results(type) {
                 console.log(type);
@@ -643,6 +644,11 @@
 <style scoped>
     .link {
         text-decoration: none;
+    }
+
+    .fix_height_table {
+        height: 70vh;
+        overflow: scroll;
     }
 
     .popword {
